@@ -1,7 +1,16 @@
+@import url("https://v1.fontapi.ir/css/Vazir");
+
+* {
+  direction: rtl;
+  font-family: "Vazir", sans-serif;
+  font-weight: lighter;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
+  direction: rtl;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
