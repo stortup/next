@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getFirstDayOfMonth } from "./utils";
 import moment, { Moment } from "jalali-moment";
 import { without } from "ramda";
+import { useDatePicker } from "./useDatePicker";
 
 function DayLabel({ text }: { text: string }) {
   return (
@@ -52,13 +53,13 @@ function DisableDay() {
 }
 
 function DatePicker({
-  startIndex,
+  startWeekday,
   daysInMonth,
   onDayClicked,
   selectedDays,
   highlightedDays,
 }: {
-  startIndex: number;
+  startWeekday: number;
   daysInMonth: number;
   onDayClicked: (day: number) => unknown;
   selectedDays: number[];
@@ -69,7 +70,7 @@ function DatePicker({
   for (let w = 0; w < 6; w++) {
     const days: JSX.Element[] = [];
     for (let d = 0; d < 7; d++) {
-      const day = w * 7 + 1 + d + startIndex;
+      const day = w * 7 + 1 + d - startWeekday;
       if (day < 1 || day > daysInMonth) {
         days.push(<DisableDay />);
       } else if (selectedDays.includes(day)) {
@@ -159,7 +160,6 @@ function PickerHeader({
 function useKeyPress(targetKey: string) {
   const [keyPressed, setKeyPressed] = useState<boolean>(false);
   function downHandler({ key }: KeyboardEvent) {
-    console.log(key);
     if (key === targetKey) {
       setKeyPressed(true);
     }
@@ -183,95 +183,36 @@ function useKeyPress(targetKey: string) {
 }
 
 export function DateTimePicker() {
-  const [selectedDates, setSelectedDates] = useState<Moment[]>([]);
-  const [month, setMonth] = useState(getFirstDayOfMonth());
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
-
-  // const [selectedTimes, setSelectedTimes] = useState<number[]>([]);
-
   const multi = useKeyPress("Control");
-
-  const highlightedDays: number[] = selectedDates
-    .filter((d) => d.jMonth() === month.jMonth())
-    .map((d) => d.jDate());
-
-  let selectedTimes: number[] = [];
-
-  if (selectedDays.length > 0) {
-    const sDay = selectedDays[0];
-    selectedTimes = selectedDates
-      .filter((d) => d.jMonth() === month.jMonth())
-      .filter((d) => d.jDate() === sDay)
-      .map((d) => d.hour());
-  }
+  const {
+    changeMonth,
+    currentMonthTitle,
+    selectedDays,
+    highlightedDays,
+    startWeekday,
+    daysInMonth,
+    toggleDay,
+    selectedTimes,
+    toggleTime,
+  } = useDatePicker([], multi);
 
   return (
     <div className="card">
-      <PickerHeader
-        title={month.locale("fa").format("MMMM")}
-        onMonthChange={(v) => {
-          setMonth(month.clone().add(v, "months"));
-          setSelectedDays([]);
-        }}
-      />
+      <PickerHeader title={currentMonthTitle} onMonthChange={changeMonth} />
       <div className="d-flex justify-content-start">
         <DatePicker
           selectedDays={selectedDays}
           highlightedDays={highlightedDays}
-          startIndex={-month.jDay()}
-          daysInMonth={month.jDaysInMonth()}
-          onDayClicked={(dayInMonth) => {
-            const day = month.clone().add(dayInMonth, "days");
-
-            if (multi) {
-              if (selectedDays.includes(dayInMonth)) {
-                setSelectedDays(without([dayInMonth], selectedDays));
-                return;
-              }
-              setSelectedDays([...selectedDays, dayInMonth]);
-              return;
-            }
-
-            setSelectedDays([dayInMonth]);
-          }}
+          startWeekday={startWeekday}
+          daysInMonth={daysInMonth}
+          onDayClicked={toggleDay}
         />
         <TimePicker
           selectedTimes={selectedTimes}
           hidden={selectedDays.length < 1}
-          onTimeClicked={(time) => {
-            if (selectedDays.length === 0) return;
-            let newDates = [...selectedDates];
-            for (const selectedDay of selectedDays) {
-              const date = month.clone().jDate(selectedDay).hour(time);
-              if (!includes(selectedDates, date)) {
-                newDates.push(date);
-              } else {
-                if (selectedDays.length === 1) {
-                  newDates = withoutDate(newDates, date);
-                }
-              }
-            }
-            setSelectedDates(newDates);
-          }}
+          onTimeClicked={toggleTime}
         />
       </div>
     </div>
   );
-}
-
-function includes(dates: Moment[], date: Moment): boolean {
-  for (const d of dates) {
-    if (d.isSame(date)) return true;
-  }
-
-  return false;
-}
-
-function withoutDate(dates: Moment[], date: Moment): Moment[] {
-  const newDates: Moment[] = [];
-  for (const d of dates) {
-    if (!d.isSame(date)) newDates.push(d);
-  }
-
-  return newDates;
 }

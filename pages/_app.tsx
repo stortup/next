@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.rtl.css";
 import "../styles/globals.css";
+import "./index.css";
 
 import type { AppProps } from "next/app";
 
