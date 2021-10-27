@@ -1,0 +1,13 @@
+.time-scroll::-webkit-scrollbar-track {
+  padding: 2px 0;
+  background-color: #fff;
+}
+
+.time-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.time-scroll::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #737272;
+}
