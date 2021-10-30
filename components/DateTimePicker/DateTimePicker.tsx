@@ -1,106 +1,11 @@
-import styles from "./DateTimePicker.module.css";
+import { DatePicker } from "./DatePicker";
 import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 import { getFirstDayOfMonth } from "./utils";
 import moment, { Moment } from "jalali-moment";
 import { without } from "ramda";
 import { useDatePicker } from "./useDatePicker";
-
-function DayLabel({ text }: { text: string }) {
-  return (
-    <div className="col">
-      <p className="text-center" style={{ width: 46, height: 46 }}>
-        {text}
-      </p>
-    </div>
-  );
-}
-
-function Day({
-  day,
-  onClick,
-  type,
-}: {
-  day: number;
-  type?: "selected" | "highlighted";
-  onClick: (day: number) => void;
-}) {
-  let cls = "btn";
-  if (type === "selected") cls += " btn-primary";
-  else if (type === "highlighted") cls += " btn-secondary";
-
-  return (
-    <div className="col">
-      <button
-        className={`${cls} ${styles.day}`}
-        style={{ width: 46, height: 46 }}
-        onClick={() => onClick(day)}
-      >
-        {day.toString()}
-      </button>
-    </div>
-  );
-}
-
-function DisableDay() {
-  return (
-    <div className="col">
-      <button disabled={true} className="btn btn-light">
-        {" "}
-      </button>
-    </div>
-  );
-}
-
-function DatePicker({
-  startWeekday,
-  daysInMonth,
-  onDayClicked,
-  selectedDays,
-  highlightedDays,
-}: {
-  startWeekday: number;
-  daysInMonth: number;
-  onDayClicked: (day: number) => unknown;
-  selectedDays: number[];
-  highlightedDays: number[];
-}) {
-  const weeks: JSX.Element[] = [];
-
-  for (let w = 0; w < 6; w++) {
-    const days: JSX.Element[] = [];
-    for (let d = 0; d < 7; d++) {
-      const day = w * 7 + 1 + d - startWeekday;
-      if (day < 1 || day > daysInMonth) {
-        days.push(<DisableDay />);
-      } else if (selectedDays.includes(day)) {
-        days.push(<Day type="selected" day={day} onClick={onDayClicked} />);
-      } else if (highlightedDays.includes(day)) {
-        days.push(<Day type="highlighted" day={day} onClick={onDayClicked} />);
-      } else {
-        days.push(<Day day={day} onClick={onDayClicked} />);
-      }
-    }
-    weeks.push(<div className="row">{days}</div>);
-  }
-
-  return (
-    <div>
-      <div className="container">
-        <div className="row">
-          <DayLabel text="ش" />
-          <DayLabel text="ی" />
-          <DayLabel text="د" />
-          <DayLabel text="س" />
-          <DayLabel text="چ" />
-          <DayLabel text="پ" />
-          <DayLabel text="ج" />
-        </div>
-      </div>
-      <div className="container">{weeks}</div>
-    </div>
-  );
-}
+import styles from "./styles.module.css";
 
 function TimePicker({
   hidden,
@@ -115,12 +20,12 @@ function TimePicker({
 
   if (!hidden) {
     for (let i = 8; i < 19; i++) {
-      const cls = selectedTimes.includes(i)
-        ? "btn btn-primary"
-        : "btn btn-light";
+      let cn = "list-group-item";
+      if (selectedTimes.includes(i)) cn += " active";
+      // if (reserved) cn += " disabled text-decoration-line-through";
 
       times.push(
-        <button className={cls} onClick={() => onTimeClicked(i)}>
+        <button className={cn} onClick={() => onTimeClicked(i)}>
           ساعت {i}
         </button>
       );
@@ -130,9 +35,9 @@ function TimePicker({
   return (
     <div
       className={styles["time-scroll"]}
-      style={{ height: 300, overflowY: "scroll" }}
+      style={{ maxHeight: 400, overflowY: "scroll" }}
     >
-      <div className="d-grid">{times}</div>
+      <div className="list-group">{times}</div>
     </div>
   );
 }
@@ -182,8 +87,9 @@ function useKeyPress(targetKey: string) {
   return keyPressed;
 }
 
-export function DateTimePicker() {
-  const multi = useKeyPress("Control");
+export function DateTimePicker(props: { multi?: boolean }) {
+  const ctrlPressed = useKeyPress("Control");
+
   const {
     changeMonth,
     currentMonthTitle,
@@ -194,24 +100,31 @@ export function DateTimePicker() {
     toggleDay,
     selectedTimes,
     toggleTime,
-  } = useDatePicker([], multi);
+  } = useDatePicker([], {
+    ctrlPressed,
+    multi: props.multi || false,
+  });
 
   return (
     <div className="card">
       <PickerHeader title={currentMonthTitle} onMonthChange={changeMonth} />
-      <div className="d-flex justify-content-start">
-        <DatePicker
-          selectedDays={selectedDays}
-          highlightedDays={highlightedDays}
-          startWeekday={startWeekday}
-          daysInMonth={daysInMonth}
-          onDayClicked={toggleDay}
-        />
-        <TimePicker
-          selectedTimes={selectedTimes}
-          hidden={selectedDays.length < 1}
-          onTimeClicked={toggleTime}
-        />
+      <div className="row">
+        <div className="col-md-9">
+          <DatePicker
+            selectedDays={selectedDays}
+            highlightedDays={highlightedDays}
+            startWeekday={startWeekday}
+            daysInMonth={daysInMonth}
+            onDayClicked={toggleDay}
+          />
+        </div>
+        <div className="col-md-3">
+          <TimePicker
+            selectedTimes={selectedTimes}
+            hidden={selectedDays.length < 1}
+            onTimeClicked={toggleTime}
+          />
+        </div>
       </div>
     </div>
   );

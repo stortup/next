@@ -29,10 +29,7 @@ function Header() {
 
 function Sidebar() {
   return (
-    <nav
-      id="sidebarMenu"
-      className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
-    >
+    <nav className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
       <div className="position-sticky pt-3">
         <ul className="nav nav-pills flex-column mb-auto">
           <SidebarItem label="منتور ها" active />
@@ -92,12 +89,16 @@ export const Dashboard: NextPage<{ title: string }> = ({ children, title }) => {
   return (
     <>
       <Header />
-      <div className="row">
-        <Sidebar />
-        <main className="col-md-9 ms-sm-auto col-lg-10 px-md-3 pt-3">
-          <h2>{title}</h2>
-          {children}
-        </main>
+      <div className="container-fluid">
+        <div className="row">
+          <Sidebar />
+          <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div className="my-3">
+              <h2>{title}</h2>
+            </div>
+            {children}
+          </main>
+        </div>
       </div>
     </>
   );
