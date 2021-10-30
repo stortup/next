@@ -1,25 +1,25 @@
+import { Button, Table } from "reactstrap";
+
 function Day({
   day,
   onClick,
-  type,
+  selected,
+  highlighted,
 }: {
   day: number;
-  type?: "selected" | "highlighted";
+  selected?: boolean;
+  highlighted?: boolean;
   onClick: (day: number) => void;
 }) {
-  let cls = "btn";
-  if (type === "selected") cls += " btn-primary";
-  else if (type === "highlighted") cls += " btn-secondary";
+  let color = "";
+  if (highlighted) color = "secondary";
+  if (selected) color = "primary";
 
   return (
-    <th>
-      <button
-        className={cls}
-        style={{ width: 46, height: 46 }}
-        onClick={() => onClick(day)}
-      >
+    <th className="text-center">
+      <Button color={color} onClick={() => onClick(day)}>
         {day.toString()}
-      </button>
+      </Button>
     </th>
   );
 }
@@ -31,9 +31,7 @@ function NullDay() {
 function DayLabel({ text }: { text: string }) {
   return (
     <th>
-      <p className="text-center" style={{ width: 46, height: 46 }}>
-        {text}
-      </p>
+      <p className="text-center">{text}</p>
     </th>
   );
 }
@@ -74,9 +72,9 @@ export function DatePicker({
       if (day < 1 || day > daysInMonth) {
         days.push(<NullDay />);
       } else if (selectedDays.includes(day)) {
-        days.push(<Day type="selected" day={day} onClick={onDayClicked} />);
+        days.push(<Day selected day={day} onClick={onDayClicked} />);
       } else if (highlightedDays.includes(day)) {
-        days.push(<Day type="highlighted" day={day} onClick={onDayClicked} />);
+        days.push(<Day highlighted day={day} onClick={onDayClicked} />);
       } else {
         days.push(<Day day={day} onClick={onDayClicked} />);
       }
@@ -87,11 +85,11 @@ export function DatePicker({
   }
 
   return (
-    <table className="table table-sm">
+    <Table size="sm">
       <thead>
         <WeekDayHeader />
       </thead>
       <tbody>{weeks}</tbody>
-    </table>
+    </Table>
   );
 }

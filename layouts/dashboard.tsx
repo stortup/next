@@ -1,60 +1,73 @@
 import { NextPage } from "next";
+import { useState } from "react";
+import {
+  Collapse,
+  Navbar,
+  NavbarBrand,
+  NavbarToggler,
+  Input,
+  Col,
+  Nav,
+  NavItem,
+  NavLink,
+  Container,
+  Row,
+} from "reactstrap";
 
 function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggle = () => setIsOpen(!isOpen);
+
   return (
-    <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-      <a className="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
+    <Navbar dark sticky="top" className="bg-dark flex-md-nowrap p-0 shadow">
+      <NavbarBrand className="col-md-3 col-lg-2 me-0 px-3" href="#">
         استورت آپ
-      </a>
-      <button
-        className="navbar-toggler position-absolute d-md-none collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#sidebarMenu"
-        aria-controls="sidebarMenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-      <input
+      </NavbarBrand>
+      <NavbarToggler
+        onClick={toggle}
+        className="d-md-none position-absolute d"
+      />
+      <Collapse isOpen={isOpen} navbar></Collapse>
+      <Input
         className="form-control form-control-dark w-100"
         type="text"
         placeholder="Search"
         aria-label="Search"
-      ></input>
-    </header>
+      />
+    </Navbar>
   );
 }
 
 function Sidebar() {
   return (
-    <nav className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <Col
+      tag="nav"
+      md={3}
+      lg={2}
+      className="d-md-block bg-light sidebar collapse"
+    >
       <div className="position-sticky pt-3">
-        <ul className="nav nav-pills flex-column mb-auto">
+        <Nav pills className="flex-column mb-auto">
           <SidebarItem label="منتور ها" active />
           <SidebarItem label="کاربر ها" />
           <SidebarItem label="خرید ها" />
-        </ul>
+        </Nav>
 
         <SideBarGroupLabel />
-        <ul className="nav flex-column mb-2">
+        <Nav className="flex-column mb-2">
           <SidebarItem label="لیست دوره ها" />
           <SidebarItem label="دوره های من" />
-        </ul>
+        </Nav>
       </div>
-    </nav>
+    </Col>
   );
 }
 
 function SidebarItem({ label, active }: { label: string; active?: boolean }) {
   return (
-    <li className="nav-item px-1">
-      <a
-        className={active ? "active nav-link" : "nav-link"}
-        aria-current="page"
-        href="#"
-      >
+    <NavItem className="nav-item px-1">
+      <NavLink active={active} aria-current="page" href="#">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -72,8 +85,8 @@ function SidebarItem({ label, active }: { label: string; active?: boolean }) {
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
         {label}
-      </a>
-    </li>
+      </NavLink>
+    </NavItem>
   );
 }
 
@@ -89,17 +102,17 @@ export const Dashboard: NextPage<{ title: string }> = ({ children, title }) => {
   return (
     <>
       <Header />
-      <div className="container-fluid">
-        <div className="row">
+      <Container fluid>
+        <Row>
           <Sidebar />
-          <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <Col tag="main" md={9} lg={10} className="ms-sm-auto px-md-4">
             <div className="my-3">
               <h2>{title}</h2>
             </div>
             {children}
-          </main>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 };

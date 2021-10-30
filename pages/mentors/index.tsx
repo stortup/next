@@ -2,6 +2,18 @@ import moment from "jalali-moment";
 import type { NextPage } from "next";
 import React, { DOMAttributes, ReactElement, useState } from "react";
 import styles from "../../styles/Mentors.module.css";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  CardText,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  Row,
+} from "reactstrap";
+import Image from "next/image";
 
 interface TimeProps {
   id: string;
@@ -32,14 +44,18 @@ function Time({
   const hourEnd = _date.clone().add(1, "hour").hours();
   const text = `${weekday} ${HOUR_LABEL} ${hourStart} تا ${hourEnd}`;
 
-  let cn = "list-group-item";
-  if (selected) cn += " active";
-  if (reserved) cn += " disabled text-decoration-line-through";
+  const cn = reserved ? "text-decoration-line-through" : undefined;
 
   return (
-    <button className={cn} disabled={reserved} onClick={onClick}>
+    <ListGroupItem
+      tag="button"
+      active={selected}
+      className={cn}
+      disabled={reserved}
+      onClick={onClick}
+    >
       {text}
-    </button>
+    </ListGroupItem>
   );
 }
 
@@ -57,12 +73,12 @@ function Times({
   onSelect: OnSelect;
 }) {
   return (
-    <div className="col-sm-4">
+    <Col sm={4}>
       <div
         className={styles["time-scroll"]}
         style={{ overflowY: "scroll", maxHeight: "250px" }}
       >
-        <div className="list-group">
+        <ListGroup>
           {times.map((p, i) => (
             <Time
               key={i}
@@ -71,9 +87,9 @@ function Times({
               selected={p.id === selectedTime}
             />
           ))}
-        </div>
+        </ListGroup>
       </div>
-    </div>
+    </Col>
   );
 }
 
@@ -89,38 +105,42 @@ function Mentor({ name, bio, description, times, avatar }: MentorProps) {
   const [selectedTime, setTime] = useState<string | null>(null);
 
   return (
-    <div className="col">
-      <div className="card shadow-sm">
-        <div className="row g-0">
-          <div className="col-sm-8 d-flex align-items-stretch">
-            <div className="card-body d-flex flex-column">
-              <div className="row">
-                <div className="col-auto">
-                  <img
+    <Col>
+      <Card className="shadow-sm">
+        <Row noGutters>
+          <Col sm={8} className="d-flex align-items-stretch">
+            <CardBody className="d-flex flex-column">
+              <Row>
+                <Col className="col-auto">
+                  <Image
+                    alt="avatar"
                     className="rounded-circle"
-                    style={{ width: "50px", height: "50px" }}
                     src={avatar}
+                    width={50}
+                    height={50}
                   />
-                </div>
-                <div className="col">
-                  <h5 className="card-title mb-0">{name}</h5>
-                  <p className="card-text">{bio}</p>
-                </div>
-              </div>
+                </Col>
+                <Col>
+                  <CardTitle className="mb-0">{name}</CardTitle>
+                  <CardText>{bio}</CardText>
+                </Col>
+              </Row>
 
-              <p className="card-text">{description}</p>
-              <a
+              <CardText>{description}</CardText>
+              <Button
+                outline
+                color="primary"
                 href="#"
-                className="btn btn-outline-primary mt-auto align-self-start"
+                className="mt-auto align-self-start"
               >
                 رزرو
-              </a>
-            </div>
-          </div>
+              </Button>
+            </CardBody>
+          </Col>
           <Times times={times} selectedTime={selectedTime} onSelect={setTime} />
-        </div>
-      </div>
-    </div>
+        </Row>
+      </Card>
+    </Col>
   );
 }
 

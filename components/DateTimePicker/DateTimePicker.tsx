@@ -1,11 +1,9 @@
 import { DatePicker } from "./DatePicker";
 import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
-import { useEffect, useState } from "react";
-import { getFirstDayOfMonth } from "./utils";
-import moment, { Moment } from "jalali-moment";
-import { without } from "ramda";
-import { useDatePicker } from "./useDatePicker";
 import styles from "./styles.module.css";
+import { useDatePicker } from "./useDatePicker";
+import { useKeyPress } from "./useKeyPress";
+import { Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
 
 function TimePicker({
   hidden,
@@ -20,14 +18,16 @@ function TimePicker({
 
   if (!hidden) {
     for (let i = 8; i < 19; i++) {
-      let cn = "list-group-item";
-      if (selectedTimes.includes(i)) cn += " active";
       // if (reserved) cn += " disabled text-decoration-line-through";
 
       times.push(
-        <button className={cn} onClick={() => onTimeClicked(i)}>
+        <ListGroupItem
+          tag="button"
+          active={selectedTimes.includes(i)}
+          onClick={() => onTimeClicked(i)}
+        >
           ساعت {i}
-        </button>
+        </ListGroupItem>
       );
     }
   }
@@ -35,9 +35,9 @@ function TimePicker({
   return (
     <div
       className={styles["time-scroll"]}
-      style={{ maxHeight: 400, overflowY: "scroll" }}
+      style={{ maxHeight: 350, overflowY: "scroll" }}
     >
-      <div className="list-group">{times}</div>
+      <ListGroup>{times}</ListGroup>
     </div>
   );
 }
@@ -51,40 +51,15 @@ function PickerHeader({
 }) {
   return (
     <div className="d-flex justify-content-between">
-      <button className="btn" onClick={() => onMonthChange(-1)}>
+      <Button color="" onClick={() => onMonthChange(-1)}>
         <ArrowRight size={30} />
-      </button>
+      </Button>
       <h2 className="text-center">{title}</h2>
-      <button className="btn" onClick={() => onMonthChange(1)}>
+      <Button color="" onClick={() => onMonthChange(1)}>
         <ArrowLeft size={30} />
-      </button>
+      </Button>
     </div>
   );
-}
-
-function useKeyPress(targetKey: string) {
-  const [keyPressed, setKeyPressed] = useState<boolean>(false);
-  function downHandler({ key }: KeyboardEvent) {
-    if (key === targetKey) {
-      setKeyPressed(true);
-    }
-  }
-  const upHandler = ({ key }: KeyboardEvent) => {
-    if (key === targetKey) {
-      setKeyPressed(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("keydown", downHandler);
-    window.addEventListener("keyup", upHandler);
-    return () => {
-      window.removeEventListener("keydown", downHandler);
-      window.removeEventListener("keyup", upHandler);
-    };
-  }, []);
-
-  return keyPressed;
 }
 
 export function DateTimePicker(props: { multi?: boolean }) {
@@ -106,10 +81,10 @@ export function DateTimePicker(props: { multi?: boolean }) {
   });
 
   return (
-    <div className="card">
+    <>
       <PickerHeader title={currentMonthTitle} onMonthChange={changeMonth} />
-      <div className="row">
-        <div className="col-md-9">
+      <Row>
+        <Col md={9}>
           <DatePicker
             selectedDays={selectedDays}
             highlightedDays={highlightedDays}
@@ -117,15 +92,15 @@ export function DateTimePicker(props: { multi?: boolean }) {
             daysInMonth={daysInMonth}
             onDayClicked={toggleDay}
           />
-        </div>
-        <div className="col-md-3">
+        </Col>
+        <Col md={3}>
           <TimePicker
             selectedTimes={selectedTimes}
             hidden={selectedDays.length < 1}
             onTimeClicked={toggleTime}
           />
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+    </>
   );
 }
