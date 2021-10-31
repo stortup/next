@@ -1,4 +1,7 @@
+import { fetcher } from "client/client";
 import { NextPage } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   Collapse,
@@ -13,17 +16,27 @@ import {
   Container,
   Row,
 } from "reactstrap";
+import useSWR from "swr";
+import { fa } from "utils/persian";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data, error } = useSWR("/users/get_me", fetcher);
 
   const toggle = () => setIsOpen(!isOpen);
 
+  const usernameLabel = fa(
+    data?.name ?? data?.phone?.replace("+98", "0") ?? "شما"
+  );
+
   return (
     <Navbar dark sticky="top" className="bg-dark flex-md-nowrap p-0 shadow">
-      <NavbarBrand className="col-md-3 col-lg-2 me-0 px-3" href="#">
-        استورت آپ
-      </NavbarBrand>
+      <Link href="/" passHref>
+        <NavbarBrand className="col-md-3 col-lg-2 me-0 px-3">
+          استورت آپ
+        </NavbarBrand>
+      </Link>
+
       <NavbarToggler
         onClick={toggle}
         className="d-md-none position-absolute d"
@@ -35,11 +48,18 @@ function Header() {
         placeholder="Search"
         aria-label="Search"
       />
+      <Nav navbar>
+        <NavItem className="text-nowrap">
+          <NavLink className="px-3">{usernameLabel}</NavLink>
+        </NavItem>
+      </Nav>
     </Navbar>
   );
 }
 
 function Sidebar() {
+  const router = useRouter();
+
   return (
     <Col
       tag="nav"
@@ -49,43 +69,58 @@ function Sidebar() {
     >
       <div className="position-sticky pt-3">
         <Nav pills className="flex-column mb-auto">
-          <SidebarItem label="منتور ها" active />
-          <SidebarItem label="کاربر ها" />
-          <SidebarItem label="خرید ها" />
+          <SidebarItem
+            label="منتور ها"
+            href="/mentors"
+            currentPath={router.pathname}
+          />
+          <SidebarItem label="کاربر ها" currentPath={router.pathname} />
+          <SidebarItem label="خرید ها" currentPath={router.pathname} />
         </Nav>
 
         <SideBarGroupLabel />
         <Nav className="flex-column mb-2">
-          <SidebarItem label="لیست دوره ها" />
-          <SidebarItem label="دوره های من" />
+          <SidebarItem label="لیست دوره ها" currentPath={router.pathname} />
+          <SidebarItem label="دوره های من" currentPath={router.pathname} />
         </Nav>
       </div>
     </Col>
   );
 }
 
-function SidebarItem({ label, active }: { label: string; active?: boolean }) {
+function SidebarItem({
+  label,
+  currentPath,
+  href,
+}: {
+  label: string;
+  currentPath: string;
+  href?: string;
+}) {
+  const active = currentPath === href;
   return (
-    <NavItem className="nav-item px-1">
-      <NavLink active={active} aria-current="page" href="#">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="feather feather-home"
-          aria-hidden="true"
-        >
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        {label}
-      </NavLink>
+    <NavItem className="px-1">
+      <Link href={href ?? "#"} passHref>
+        <NavLink active={active} aria-current="page">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-home"
+            aria-hidden="true"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          {label}
+        </NavLink>
+      </Link>
     </NavItem>
   );
 }
@@ -102,17 +137,13 @@ export const Dashboard: NextPage<{ title: string }> = ({ children, title }) => {
   return (
     <>
       <Header />
-      <Container fluid>
-        <Row>
-          <Sidebar />
-          <Col tag="main" md={9} lg={10} className="ms-sm-auto px-md-4">
-            <div className="my-3">
-              <h2>{title}</h2>
-            </div>
-            {children}
-          </Col>
-        </Row>
-      </Container>
+      <Sidebar />
+      <Col tag="main" md={9} lg={10} className="ms-sm-auto px-md-2">
+        <div className="my-3">
+          <h2>{title}</h2>
+        </div>
+        {children}
+      </Col>
     </>
   );
 };

@@ -1,6 +1,5 @@
 import moment from "jalali-moment";
-import type { NextPage } from "next";
-import React, { DOMAttributes, ReactElement, useState } from "react";
+import React, { DOMAttributes, useState } from "react";
 import styles from "../../styles/Mentors.module.css";
 import {
   Button,
@@ -107,7 +106,7 @@ function Mentor({ name, bio, description, times, avatar }: MentorProps) {
   return (
     <Col>
       <Card className="shadow-sm">
-        <Row noGutters>
+        <Row className="g-0">
           <Col sm={8} className="d-flex align-items-stretch">
             <CardBody className="d-flex flex-column">
               <Row>
