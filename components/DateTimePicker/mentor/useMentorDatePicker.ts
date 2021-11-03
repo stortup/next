@@ -1,11 +1,11 @@
 import { Moment } from "jalali-moment";
 import { without } from "ramda";
 import { useState } from "react";
-import { getFirstDayOfMonth } from "./utils";
+import { getFirstDayOfMonth } from "../utils";
 
 export function useDatePicker(
   initDates: Moment[] = [],
-  { ctrlPressed, multi }: { ctrlPressed: boolean; multi: boolean },
+  { ctrlPressed }: { ctrlPressed: boolean },
 ) {
   const [dates, setDates] = useState<Moment[]>(initDates);
   const [currentMonth, setCurrentMonth] = useState(getFirstDayOfMonth());
@@ -27,7 +27,7 @@ export function useDatePicker(
   }
 
   function toggleDay(day: number) {
-    if (multi && ctrlPressed) {
+    if (ctrlPressed) {
       if (selectedDays.includes(day)) {
         setSelectedDays(without([day], selectedDays));
         return;
@@ -41,12 +41,6 @@ export function useDatePicker(
 
   function toggleTime(time: number) {
     if (selectedDays.length === 0) return;
-
-    if (!multi) {
-      const date = currentMonth.clone().jDate(selectedDays[0]).hour(time);
-      setDates([date]);
-      return;
-    }
 
     let newDates = [...dates];
     for (const selectedDay of selectedDays) {

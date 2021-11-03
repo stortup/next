@@ -1,32 +1,35 @@
-import { DatePicker } from "./DatePicker";
+import { DatePickerUI } from "../DatePickerUI";
 import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
-import styles from "./styles.module.css";
-import { useDatePicker } from "./useDatePicker";
-import { useKeyPress } from "./useKeyPress";
+import styles from "../styles.module.css";
+import { useDatePicker } from "./useUserDatePicker";
 import { Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
+import moment, { Moment } from "jalali-moment";
+import { fa } from "utils/persian";
 
 function TimePicker({
   hidden,
-  selectedTimes,
+  availableTimes,
+  selectedTime,
   onTimeClicked,
 }: {
   hidden: boolean;
-  selectedTimes: number[];
+  availableTimes: number[];
+  selectedTime: number | null;
   onTimeClicked: (time: number) => unknown;
 }) {
   const times: JSX.Element[] = [];
 
   if (!hidden) {
-    for (let i = 8; i < 19; i++) {
+    for (let i of availableTimes) {
       // if (reserved) cn += " disabled text-decoration-line-through";
 
       times.push(
         <ListGroupItem
           tag="button"
-          active={selectedTimes.includes(i)}
+          active={selectedTime === i}
           onClick={() => onTimeClicked(i)}
         >
-          ساعت {i}
+          {fa(`ساعت ${i} تا ${i + 1}`)}
         </ListGroupItem>
       );
     }
@@ -62,22 +65,32 @@ function PickerHeader({
   );
 }
 
-export function DateTimePicker(props: { multi?: boolean }) {
-  const ctrlPressed = useKeyPress("Control");
-
+export function UserDateTimePicker({
+  availableDates,
+  reservedDates,
+  onDate,
+}: {
+  availableDates: Date[] | string[];
+  reservedDates: Date[] | string[];
+  selectedDate: Date | string | null;
+  onDate: (date: Moment | null) => unknown;
+}) {
   const {
     changeMonth,
     currentMonthTitle,
-    selectedDays,
     highlightedDays,
     startWeekday,
     daysInMonth,
+    selectedDay,
     toggleDay,
-    selectedTimes,
-    toggleTime,
-  } = useDatePicker([], {
-    ctrlPressed,
-    multi: props.multi || false,
+    selectedDate,
+    selectTime,
+    disabledDays,
+    availableTimesInCurrentDay,
+  } = useDatePicker({
+    availableDates: availableDates.map((e) => moment(e)),
+    reservedDates: reservedDates.map((e) => moment(e)),
+    onDate,
   });
 
   return (
@@ -85,8 +98,9 @@ export function DateTimePicker(props: { multi?: boolean }) {
       <PickerHeader title={currentMonthTitle} onMonthChange={changeMonth} />
       <Row>
         <Col md={9}>
-          <DatePicker
-            selectedDays={selectedDays}
+          <DatePickerUI
+            selectedDays={selectedDay === null ? [] : [selectedDay]}
+            disabledDays={disabledDays}
             highlightedDays={highlightedDays}
             startWeekday={startWeekday}
             daysInMonth={daysInMonth}
@@ -95,9 +109,10 @@ export function DateTimePicker(props: { multi?: boolean }) {
         </Col>
         <Col md={3}>
           <TimePicker
-            selectedTimes={selectedTimes}
-            hidden={selectedDays.length < 1}
-            onTimeClicked={toggleTime}
+            availableTimes={availableTimesInCurrentDay}
+            selectedTime={selectedDate?.hour() ?? null}
+            hidden={!selectedDay}
+            onTimeClicked={selectTime}
           />
         </Col>
       </Row>

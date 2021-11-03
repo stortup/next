@@ -11,7 +11,7 @@ function postData(url: string, data: any) {
 }
 
 export async function fetcher(url: string) {
-  const response = await fetch("http://localhost:4004" + url, {
+  const response = await fetch(BASE_URL + url, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
@@ -43,3 +43,5 @@ export const users = {
     return await response.json() as { access_token: string };
   },
 };
+
+export const mentors = {};
