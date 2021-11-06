@@ -1,6 +1,6 @@
 import { DatePickerUI } from "../DatePickerUI";
 import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
-import styles from "./styles.module.css";
+import styles from "../styles.module.css";
 import { useDatePicker } from "./useMentorDatePicker";
 import { useKeyPress } from "./useKeyPress";
 import { Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
@@ -16,20 +16,28 @@ function TimePicker({
 }) {
   const times: JSX.Element[] = [];
 
-  if (!hidden) {
-    for (let i = 8; i < 19; i++) {
-      // if (reserved) cn += " disabled text-decoration-line-through";
+  if (hidden) {
+    return (
+      <div className="d-flex aligns-items-center h-100 border rounded">
+        <div className="row justify-content-center align-self-center w-100">
+          <p className="text-center">تاریخی را انتخاب نکرده اید</p>
+        </div>
+      </div>
+    );
+  }
 
-      times.push(
-        <ListGroupItem
-          tag="button"
-          active={selectedTimes.includes(i)}
-          onClick={() => onTimeClicked(i)}
-        >
-          ساعت {i}
-        </ListGroupItem>
-      );
-    }
+  for (let i = 8; i < 19; i++) {
+    // if (reserved) cn += " disabled text-decoration-line-through";
+
+    times.push(
+      <ListGroupItem
+        tag="button"
+        active={selectedTimes.includes(i)}
+        onClick={() => onTimeClicked(i)}
+      >
+        ساعت {i}
+      </ListGroupItem>
+    );
   }
 
   return (
@@ -50,7 +58,7 @@ function PickerHeader({
   onMonthChange: (d: -1 | 1) => unknown;
 }) {
   return (
-    <div className="d-flex justify-content-between">
+    <div className="d-flex justify-content-between p-3">
       <Button color="" onClick={() => onMonthChange(-1)}>
         <ArrowRight size={30} />
       </Button>
@@ -87,6 +95,7 @@ export function MentorDateTimePicker() {
           <DatePickerUI
             selectedDays={selectedDays}
             highlightedDays={highlightedDays}
+            disabledDays={[]}
             startWeekday={startWeekday}
             daysInMonth={daysInMonth}
             onDayClicked={toggleDay}
