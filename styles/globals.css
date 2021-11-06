@@ -22,9 +22,10 @@ a {
   box-sizing: border-box;
 }
 
-.feather {
-  width: 16px;
-  vertical-align: text-bottom;
+/* Custom */
+.btn,
+input {
+  border-radius: 0.1rem !important;
 }
 
 .sidebar {

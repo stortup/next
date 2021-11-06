@@ -13,3 +13,11 @@ export interface ITime {
   start_date: string;
   reserved: boolean;
 }
+
+export interface IUser {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  avatar_url: string;
+}

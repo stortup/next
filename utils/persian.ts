@@ -9,3 +9,7 @@ export function fa(input: string | number): string {
     return digits[parseInt(match, 10)];
   });
 }
+
+export function fPhone(input: string): string {
+  return fa(input.replace("+98", "0"));
+}

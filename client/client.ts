@@ -10,11 +10,17 @@ function postData(url: string, data: any) {
   });
 }
 
-export async function fetcher(url: string) {
+export async function fetcher(url: string, body?: any) {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  };
+
+  if (body) headers["Content-Type"] = "application/json";
+
   const response = await fetch(BASE_URL + url, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    },
+    method: body ? "POST" : "GET",
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
   });
   return response.json();
 }

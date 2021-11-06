@@ -10,16 +10,18 @@ export function Input({
   validate,
   onValue,
   disabled,
+  value: initValue,
 }: {
   id: string;
   type: InputType;
   className?: string;
   placeholder?: string;
+  value?: string;
   disabled?: boolean;
   validate: (value: string) => boolean;
   onValue: (value: string) => unknown;
 }) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(initValue ?? "");
   const [hasError, setError] = useState(false);
 
   const valid = validate(value);
@@ -40,6 +42,7 @@ export function Input({
       onFocus={() => setError(false)}
       invalid={hasError}
       valid={valid}
+      defaultValue={initValue}
     />
   );
 }

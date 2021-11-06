@@ -139,8 +139,8 @@ export const Dashboard: NextPage<{ title: string }> = ({ children, title }) => {
       <Header />
       <Sidebar />
       <Col tag="main" md={9} lg={10} className="ms-sm-auto px-md-2">
-        <div className="my-3">
-          <h2>{title}</h2>
+        <div className="my-3 pb-2">
+          <h3 className="fw-100">{title}</h3>
         </div>
         {children}
       </Col>
