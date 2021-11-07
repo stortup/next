@@ -23,7 +23,7 @@ import {
 import useSWR from "swr";
 import { fa } from "utils/persian";
 import { Icon, Person, Clock } from "react-bootstrap-icons";
-import { IUser } from "types";
+import { IMentorFull, IUser } from "types";
 
 function ProfileDropDown({ user }: { user: IUser }) {
   const [open, toggle] = useState(false);
@@ -75,6 +75,8 @@ function Header() {
 }
 
 function Sidebar() {
+  const { data, error } = useSWR<IMentorFull>("/users/get_me", fetcher);
+
   const router = useRouter();
 
   return (
@@ -92,13 +94,19 @@ function Sidebar() {
             href="/mentors"
             currentPath={router.pathname}
           />
+          {data?.is_mentor && (
+            <SidebarItem
+              label="تعیین زمان منتورینگ"
+              href="/my-times"
+              currentPath={router.pathname}
+              icon={Clock}
+            />
+          )}
           <SidebarItem
-            label="تعیین زمان منتورینگ"
-            href="/my-times"
+            label="قرارهای ملاقات من"
+            href="/my-meets"
             currentPath={router.pathname}
-            icon={Clock}
           />
-          <SidebarItem label="کاربر ها" currentPath={router.pathname} />
           <SidebarItem label="خرید ها" currentPath={router.pathname} />
         </Nav>
 

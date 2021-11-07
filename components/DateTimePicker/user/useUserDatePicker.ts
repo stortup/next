@@ -43,6 +43,10 @@ export function useDatePicker(
     d.hour()
   );
 
+  const reservedTimesInCurrentDay = reservedDatesInCurrentDay.map((d) =>
+    d.hour()
+  );
+
   function toggleDay(day: number) {
     setSelectedDay(day);
   }
@@ -74,6 +78,7 @@ export function useDatePicker(
     startWeekday: currentMonth.jMonth(),
     daysInMonth: currentMonth.jDaysInMonth(),
     availableTimesInCurrentDay,
+    reservedTimesInCurrentDay,
     selectedDay,
     setCurrentMonth,
     toggleDay,

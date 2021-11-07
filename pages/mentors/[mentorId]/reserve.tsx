@@ -11,6 +11,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  Button,
 } from "reactstrap";
 import Image from "next/image";
 import { UserDateTimePicker } from "components/DateTimePicker/user/UserDateTimePicker";
@@ -25,8 +26,100 @@ import { compareMoment } from "components/DateTimePicker/utils";
 import { ErrorHandler } from "components/ErrorHandler";
 import { Loading } from "components/Loading";
 
-function Cart({ price, disable }: { price: number; disable?: boolean }) {
-  console.log(price);
+export default function ReserveMentor({
+  mentorId,
+  time,
+}: {
+  mentorId: string;
+  time?: string;
+}) {
+  const [selectedDate, setDate] = useState<ITime | null>(null);
+  const { data, error } = useSWR<IMentor>(
+    `/mentors/get_mentor?mentor_id=${mentorId}`,
+    fetcher
+  );
+
+  async function reserve() {
+    await fetcher("/mentors/reserve_mentor", {
+      mentor_id: mentorId,
+      date: selectedDate!.date,
+      price_paid: data!.hourly_cost,
+    });
+  }
+
+  // useEffect(() => {
+  //   if (loading === true && data) {
+  //     setDate(data.times.find((time) => time.id === timeId) ?? selectedDate);
+  //     setLoading(false);
+  //   }
+  // });
+
+  if (error) return <ErrorHandler error={error} />;
+  if (!data) return <Loading />;
+
+  const timeTitle = selectedDate
+    ? `زمان انتخاب شده: ${fa(
+        moment(selectedDate.date)
+          .locale("fa")
+          .format("ddd D MMM YYYY - ساعت HH:mm")
+      )}`
+    : "زمان انتخاب شده";
+
+  return (
+    <Row className="gy-3">
+      <Col lg={9}>
+        <Mentor mentor={data} />
+        <Card>
+          <CardHeader>{timeTitle}</CardHeader>
+          <CardBody>
+            <UserDateTimePicker
+              availableDates={data.times
+                .filter((d) => !d.reserved)
+                .map((d) => d.date)}
+              reservedDates={data.times
+                .filter((d) => d.reserved)
+                .map((d) => d.date)}
+              selectedDate={selectedDate?.date ?? null}
+              onDate={(date) => {
+                if (date === null) return setDate(null);
+                for (const source of data.times) {
+                  const isSame = compareMoment(moment(source.date), date);
+                  if (isSame) return setDate(source);
+                }
+              }}
+            />
+          </CardBody>
+        </Card>
+      </Col>
+
+      <Col lg={{ size: 3, order: "last" }}>
+        <Cart price={data.hourly_cost} disable={!selectedDate} next={reserve} />
+      </Col>
+    </Row>
+  );
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {
+      mentorId: context.params?.mentorId,
+      time: context.query?.time ?? null,
+    },
+  };
+};
+
+ReserveMentor.title = "رزرو منتور";
+ReserveMentor.dashboard = true;
+
+function Cart({
+  price,
+  disable,
+  next,
+}: {
+  price: number;
+  disable?: boolean;
+  next: () => void;
+}) {
   return (
     <>
       <h4 className="d-flex justify-content-between align-items-center mb-3">
@@ -56,11 +149,16 @@ function Cart({ price, disable }: { price: number; disable?: boolean }) {
 
       <div className="input-group mb-3">
         <input type="text" className="form-control" placeholder="کد تخفیف" />
-        <button className="btn btn-secondary">اعمال کد</button>
+        <Button color="secondary">اعمال کد</Button>
       </div>
-      <button disabled={disable} className="btn btn-primary w-100">
+      <Button
+        color="primary"
+        disabled={disable}
+        onClick={next}
+        className="w-100"
+      >
         خرید
-      </button>
+      </Button>
     </>
   );
 }
@@ -86,76 +184,3 @@ function Mentor({ mentor }: { mentor: IMentor }) {
     </div>
   );
 }
-
-export default function ReserveMentor({
-  mentorId,
-  timeId,
-}: {
-  mentorId: string;
-  timeId?: string;
-}) {
-  const [selectedDate, setDate] = useState<ITime | null>(null);
-  const { data, error } = useSWR<IMentor>(
-    `/mentors/get_mentor?mentor_id=${mentorId}`,
-    fetcher
-  );
-
-  // useEffect(() => {
-  //   if (loading === true && data) {
-  //     setDate(data.times.find((time) => time.id === timeId) ?? selectedDate);
-  //     setLoading(false);
-  //   }
-  // });
-
-  if (error) return <ErrorHandler error={error} />;
-  if (!data) return <Loading />;
-
-  const timeTitle = selectedDate
-    ? `زمان انتخاب شده: ${fa(
-        moment(selectedDate.date)
-          .locale("fa")
-          .format("ddd D MMM YYYY - ساعت HH:mm")
-      )}`
-    : "زمان انتخاب شده";
-
-  return (
-    <Row className="gy-3">
-      <Col lg={9}>
-        <Mentor mentor={data} />
-        <Card>
-          <CardHeader>{timeTitle}</CardHeader>
-          <CardBody>
-            <UserDateTimePicker
-              availableDates={data.times.map((d) => d.date)}
-              reservedDates={[]}
-              selectedDate={selectedDate?.date ?? null}
-              onDate={(date) => {
-                if (date === null) return setDate(null);
-                for (const source of data.times) {
-                  const isSame = compareMoment(moment(source.date), date);
-                  if (isSame) return setDate(source);
-                }
-              }}
-            />
-          </CardBody>
-        </Card>
-      </Col>
-
-      <Col lg={{ size: 3, order: "last" }}>
-        <Cart price={data.hourly_cost} disable={!selectedDate} />
-      </Col>
-    </Row>
-  );
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return {
-    props: {
-      mentorId: context.params?.mentorId,
-      time: context.query?.time ?? null,
-    },
-  };
-};
-
-ReserveMentor.title = "رزرو منتور";
-ReserveMentor.dashboard = true;

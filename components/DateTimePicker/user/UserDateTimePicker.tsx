@@ -21,7 +21,8 @@ function TimePicker({
 
   if (!hidden) {
     for (let i of availableTimes) {
-      // if (reserved) cn += " disabled text-decoration-line-through";
+      let className = "";
+      // if (reserved) className += "disabled text-decoration-line-through";
 
       times.push(
         <ListGroupItem
@@ -87,6 +88,7 @@ export function UserDateTimePicker({
     selectTime,
     disabledDays,
     availableTimesInCurrentDay,
+    reservedTimesInCurrentDay,
   } = useDatePicker({
     availableDates: availableDates.map((e) => moment(e)),
     reservedDates: reservedDates.map((e) => moment(e)),

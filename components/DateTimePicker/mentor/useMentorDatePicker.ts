@@ -6,10 +6,12 @@ import { compareMoment, getFirstDayOfMonth } from "../utils";
 export function useDatePicker(
   {
     dates,
+    reservedDates,
     setDates,
     ctrlPressed,
   }: {
     dates: Moment[];
+    reservedDates: Moment[];
     setDates: (n: Moment[]) => void;
     ctrlPressed: boolean;
   },

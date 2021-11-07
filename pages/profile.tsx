@@ -23,7 +23,11 @@ function useUserProfile() {
   return {
     name: user?.name,
     setName: (newName: string) => set({ name: newName }),
+
     phone: user?.phone?.replace("+98", "0"),
+
+    email: user?.email,
+    setEmail: (newEmail: string) => set({ email: newEmail }),
 
     resume: isMentor ? user?.resume : undefined,
     setResume: (newResume: string) => set({ resume: newResume }),
@@ -36,8 +40,18 @@ function useUserProfile() {
 }
 
 export default function ProfilePage() {
-  const { name, setName, phone, resume, setResume, bio, setBio, isMentor } =
-    useUserProfile();
+  const {
+    name,
+    setName,
+    phone,
+    email,
+    setEmail,
+    resume,
+    setResume,
+    bio,
+    setBio,
+    isMentor,
+  } = useUserProfile();
 
   if (!name) {
     return <Loading />;
@@ -47,6 +61,8 @@ export default function ProfilePage() {
     <Row>
       <Col md={7}>
         <PrimaryField label="شماره همراه" defaultValue={fa(phone ?? "")} />
+        <Editable label="ایمیل" value={email ?? ""} onChange={setEmail} />
+
         <Editable label="نام" value={name ?? ""} onChange={setName} />
         {isMentor && (
           <Editable label="مدرک تحصیلی" value={bio ?? ""} onChange={setBio} />

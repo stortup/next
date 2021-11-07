@@ -38,7 +38,7 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
                   />
                 </Col>
                 <Col>
-                  <CardTitle className="mb-0">{name}</CardTitle>
+                  <CardTitle className="mb-0 fw-bold">{name}</CardTitle>
                   <CardText>{bio}</CardText>
                 </Col>
               </Row>
