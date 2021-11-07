@@ -3,27 +3,22 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { Clock, Icon, Person } from "react-bootstrap-icons";
 import {
-  Collapse,
-  Navbar,
-  NavbarBrand,
-  NavbarToggler,
-  Input,
   Col,
-  Nav,
-  NavItem,
-  NavLink,
-  Container,
   Dropdown,
-  Row,
-  DropdownToggle,
   DropdownItem,
   DropdownMenu,
+  DropdownToggle,
+  Input,
+  Nav,
+  Navbar,
+  NavItem,
+  NavLink,
 } from "reactstrap";
 import useSWR from "swr";
-import { fa } from "utils/persian";
-import { Icon, Person, Clock } from "react-bootstrap-icons";
 import { IMentorFull, IUser } from "types";
+import { fa } from "utils/persian";
 
 function ProfileDropDown({ user }: { user: IUser }) {
   const [open, toggle] = useState(false);
@@ -136,8 +131,13 @@ function SidebarItem({
   return (
     <NavItem className="px-1">
       <Link href={href ?? "#"} passHref>
-        <NavLink active={active} aria-current="page" className="fw-light">
-          <I className="me-2" size={18} color="gray" />
+        <NavLink
+          active={active}
+          aria-current="page"
+          className="fw-light"
+          style={{ backgroundColor: active ? "gray" : "" }}
+        >
+          <I className="me-2" size={18} color={active ? "white" : "gray"} />
 
           {label}
         </NavLink>

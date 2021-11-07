@@ -38,7 +38,11 @@ export default function MyMeetsPage() {
   if (!meets) return <Loading />;
   if (error) return <ErrorHandler error={error} />;
 
-  return <>{meets.map(Meet)}</>;
+  return (
+    <Row>
+      <Col lg={7}>{meets.map(Meet)}</Col>
+    </Row>
+  );
 }
 
 MyMeetsPage.dashboard = true;
@@ -63,7 +67,7 @@ function Meet({ peer, date }: Meet) {
                 </Col>
               )}
               <Col>
-                <CardTitle className="mb-0 fs-5 fw-bold">{peer.name}</CardTitle>
+                <CardTitle className="mb-1 fw-bold">{peer.name}</CardTitle>
                 <CardText>{peer.bio ?? ""}</CardText>
               </Col>
             </Row>

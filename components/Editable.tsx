@@ -6,11 +6,13 @@ export function Editable({
   onChange,
   label,
   multiline,
+  pattern,
 }: {
   value: string;
   onChange: (value: string) => void;
   label: string;
   multiline?: boolean;
+  pattern?: RegExp;
 }) {
   const [newValue, setValue] = useState(value ?? "");
 
@@ -18,9 +20,9 @@ export function Editable({
     setValue(value);
   }, [value]);
 
-  const valid = newValue.length > 3;
+  const valid = pattern ? pattern.test(newValue) : true;
 
-  const [hasError, setError] = useState(!newValue);
+  const [hasError, setError] = useState(!valid);
 
   return (
     <div className="mb-3">
