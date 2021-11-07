@@ -4,6 +4,8 @@ import styles from "../styles.module.css";
 import { useDatePicker } from "./useMentorDatePicker";
 import { useKeyPress } from "./useKeyPress";
 import { Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
+import { Moment } from "jalali-moment";
+import { fa } from "utils/persian";
 
 function TimePicker({
   hidden,
@@ -35,7 +37,7 @@ function TimePicker({
         active={selectedTimes.includes(i)}
         onClick={() => onTimeClicked(i)}
       >
-        ساعت {i}
+        {fa(`ساعت ${i} تا ${i + 1}`)}
       </ListGroupItem>
     );
   }
@@ -70,7 +72,13 @@ function PickerHeader({
   );
 }
 
-export function MentorDateTimePicker() {
+export function MentorDateTimePicker({
+  dates,
+  setDates,
+}: {
+  dates: Moment[];
+  setDates: (n: Moment[]) => void;
+}) {
   const ctrlPressed = useKeyPress("Control");
 
   const {
@@ -83,7 +91,11 @@ export function MentorDateTimePicker() {
     toggleDay,
     selectedTimes,
     toggleTime,
-  } = useDatePicker([], {
+    disabledDays,
+    outlinedDays,
+  } = useDatePicker({
+    dates,
+    setDates,
     ctrlPressed,
   });
 
@@ -95,10 +107,11 @@ export function MentorDateTimePicker() {
           <DatePickerUI
             selectedDays={selectedDays}
             highlightedDays={highlightedDays}
-            disabledDays={[]}
+            disabledDays={disabledDays}
             startWeekday={startWeekday}
             daysInMonth={daysInMonth}
             onDayClicked={toggleDay}
+            outlinedDays={outlinedDays}
           />
         </Col>
         <Col md={3}>

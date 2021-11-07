@@ -22,6 +22,8 @@ export async function fetcher(url: string, body?: any) {
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
+
+  if (response.status === 403) throw new Error("FORBIDDEN");
   return response.json();
 }
 
@@ -47,6 +49,9 @@ export const users = {
 
     assert2xx(response);
     return await response.json() as { access_token: string };
+  },
+  logout() {
+    localStorage.clear();
   },
 };
 

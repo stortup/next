@@ -12,15 +12,14 @@ import {
 } from "reactstrap";
 import Image from "next/image";
 import Link from "next/link";
-import moment from "jalali-moment";
+import moment, { Moment } from "jalali-moment";
 import { fa } from "utils/persian";
 import styles from "../../styles/Mentors.module.css";
 import { IMentor, ITime } from "types";
+import { compareDates } from "components/DateTimePicker/utils";
 
 export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
-  const [selectedTime, setTime] = useState<string | null>(null);
-
-  console.log(times);
+  const [selectedTime, setTime] = useState<ITime | null>(null);
 
   return (
     <Col>
@@ -46,7 +45,9 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
 
               <CardText>{resume}</CardText>
               <Link
-                href={`/mentors/${id}/reserve/?timeId=${selectedTime}`}
+                href={`/mentors/${id}/reserve/?time=${
+                  selectedTime ? new Date(selectedTime.date).toISOString() : ""
+                }`}
                 passHref
               >
                 <Button
@@ -73,7 +74,7 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
 }
 
 function Time({
-  start_date,
+  date,
   selected,
   reserved,
   onClick,
@@ -81,7 +82,7 @@ function Time({
   onClick: DOMAttributes<HTMLButtonElement>["onClick"];
   selected: boolean;
 }) {
-  const _date = moment(start_date).locale("fa");
+  const _date = moment(date).locale("fa");
   const HOUR_LABEL = "ساعت";
   const hourStart = _date.hours();
   const hourEnd = _date.clone().add(1, "hour").hours();
@@ -106,7 +107,7 @@ function Time({
 }
 
 interface OnSelect {
-  (timeId: string): unknown;
+  (time: ITime): unknown;
 }
 
 function Times({
@@ -115,24 +116,31 @@ function Times({
   onSelect,
 }: {
   times: ITime[];
-  selectedTime: string | null;
+  selectedTime: ITime | null;
   onSelect: OnSelect;
 }) {
   console.log("selected", selectedTime);
   let firstDay: number | undefined;
   const list: React.ReactNode[] = [];
 
+  let i = 0;
   for (const time of times) {
-    console.log("time", time.id);
+    let selected = false;
+
+    if (selectedTime) {
+      selected = compareDates(new Date(time.date), new Date(selectedTime.date));
+    }
 
     list.push(
       <Time
-        key={time.id}
+        key={i}
         {...time}
-        selected={time.id === selectedTime}
-        onClick={() => onSelect(time.id)}
+        selected={selected}
+        onClick={() => onSelect(time)}
       />
     );
+
+    i++;
   }
 
   return (

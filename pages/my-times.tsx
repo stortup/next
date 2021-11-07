@@ -1,22 +1,77 @@
 import { fetcher } from "client/client";
 import { MentorDateTimePicker } from "components/DateTimePicker/mentor/MentorDateTimePicker";
+import { ErrorHandler } from "components/ErrorHandler";
+import moment, { Moment } from "jalali-moment";
+import { useState } from "react";
 import { Button } from "reactstrap";
 import useSWR from "swr";
+import { ITime } from "types";
+
+// type MomentTimes = ITime & {
+//   start_date: Moment;
+// };
 
 function useTimes() {
-  const { data, error } = useSWR("/mentors/my-times", fetcher);
+  const [currentDates, _setDates] = useState<Moment[]>([]);
+  const [changed, setChanged] = useState<boolean>(false);
+
+  const {
+    data: times,
+    error,
+    mutate,
+  } = useSWR<ITime[]>("/mentors/get_my_times", fetcher, {
+    onSuccess(times) {
+      _setDates(times.map((time) => moment(time.date)));
+    },
+  });
+
+  function setDates(dates: Moment[]) {
+    setChanged(true);
+    _setDates(dates);
+  }
+
+  async function save() {
+    const replace = currentDates.map((date) => {
+      return {
+        date: date.toISOString(),
+        duration: 60,
+        reserved: false,
+      };
+    });
+
+    await fetcher("/mentors/set_my_times", {
+      times: replace,
+    });
+
+    setChanged(false);
+    mutate(replace, false);
+  }
+
+  return {
+    dates: currentDates,
+    setDates,
+    error,
+    save,
+    changed,
+  };
 }
 
 export default function MyTimes() {
+  const { dates, error, setDates, save, changed } = useTimes();
+
+  if (error) return <ErrorHandler error={error} />;
+
   return (
     <>
-      <MentorDateTimePicker />
-      <div className="text-center pt-3">
-        <Button color="primary">ذخیره</Button>
+      <MentorDateTimePicker dates={dates} setDates={setDates} />
+      <div className="text-center pt-3" onClick={save}>
+        <Button disabled={!changed} color="primary">
+          ذخیره
+        </Button>
       </div>
     </>
   );
 }
 
-MyTimes.title = "زمان های منتورینگ من";
+MyTimes.title = "تعیین زمان منتورینگ";
 MyTimes.dashboard = true;

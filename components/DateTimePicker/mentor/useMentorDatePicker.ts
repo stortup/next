@@ -1,13 +1,19 @@
-import { Moment } from "jalali-moment";
+import moment, { Moment } from "jalali-moment";
 import { without } from "ramda";
 import { useState } from "react";
-import { getFirstDayOfMonth } from "../utils";
+import { compareMoment, getFirstDayOfMonth } from "../utils";
 
 export function useDatePicker(
-  initDates: Moment[] = [],
-  { ctrlPressed }: { ctrlPressed: boolean },
+  {
+    dates,
+    setDates,
+    ctrlPressed,
+  }: {
+    dates: Moment[];
+    setDates: (n: Moment[]) => void;
+    ctrlPressed: boolean;
+  },
 ) {
-  const [dates, setDates] = useState<Moment[]>(initDates);
   const [currentMonth, setCurrentMonth] = useState(getFirstDayOfMonth());
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
 
@@ -40,12 +46,15 @@ export function useDatePicker(
   }
 
   function toggleTime(time: number) {
+    const now = moment();
     if (selectedDays.length === 0) return;
 
     let newDates = [...dates];
     for (const selectedDay of selectedDays) {
       const date = currentMonth.clone().jDate(selectedDay).hour(time);
+
       if (!includes(dates, date)) {
+        if (date.isBefore(now)) continue;
         newDates.push(date);
       } else {
         newDates = withoutDate(newDates, date);
@@ -59,6 +68,19 @@ export function useDatePicker(
     setCurrentMonth(currentMonth.clone().add(d, "months"));
   }
 
+  const disabledDays: number[] = [];
+  let now = moment();
+  for (let i = 0; i < 31; i++) {
+    if (currentMonth.clone().add(i + 1, "days").isBefore(now)) {
+      disabledDays.push(i + 1);
+    }
+  }
+
+  const outlinedDays: number[] = [];
+  if (now.jMonth() === currentMonth.jMonth()) {
+    outlinedDays.push(now.jDate());
+  }
+
   return {
     currentMonth,
     currentMonthTitle: currentMonth.locale("fa").format("MMMM"),
@@ -67,7 +89,8 @@ export function useDatePicker(
     selectedTimes,
     startWeekday: currentMonth.jMonth(),
     daysInMonth: currentMonth.jDaysInMonth(),
-
+    outlinedDays,
+    disabledDays,
     setCurrentMonth,
     toggleDay,
     toggleTime,
@@ -77,7 +100,7 @@ export function useDatePicker(
 
 function includes(dates: Moment[], date: Moment): boolean {
   for (const d of dates) {
-    if (d.isSame(date)) return true;
+    if (compareMoment(d, date)) return true;
   }
 
   return false;
@@ -86,7 +109,7 @@ function includes(dates: Moment[], date: Moment): boolean {
 function withoutDate(dates: Moment[], date: Moment): Moment[] {
   const newDates: Moment[] = [];
   for (const d of dates) {
-    if (!d.isSame(date)) newDates.push(d);
+    if (!compareMoment(d, date)) newDates.push(d);
   }
 
   return newDates;

@@ -1,28 +1,43 @@
 import { fetcher } from "client/client";
 import { Input, Button, Row, Col } from "reactstrap";
 import useSWR from "swr";
-import { IUser } from "types";
+import { IMentorFull, IUserFull } from "types";
 import { Editable } from "components/Editable";
 import { Loading } from "components/Loading";
 import { fa } from "utils/persian";
 
 function useUserProfile() {
-  const { data: user, error, mutate } = useSWR<IUser>("/users/get_me", fetcher);
+  const {
+    data: user,
+    error,
+    mutate,
+  } = useSWR<IUserFull | IMentorFull>("/users/get_me", fetcher);
 
-  async function setName(newName: string) {
-    mutate({ ...user!, name: newName }, false);
-    await fetcher("/users/edit_profile", { name: newName });
+  async function set(replacement: Partial<IUserFull | IMentorFull>) {
+    mutate({ ...user!, ...(replacement as any) }, false);
+    await fetcher("/users/edit_profile", replacement);
   }
+
+  const isMentor = user?.is_mentor;
 
   return {
     name: user?.name,
+    setName: (newName: string) => set({ name: newName }),
     phone: user?.phone?.replace("+98", "0"),
-    setName,
+
+    resume: isMentor ? user?.resume : undefined,
+    setResume: (newResume: string) => set({ resume: newResume }),
+
+    bio: isMentor ? user?.bio : undefined,
+    setBio: (newBio: string) => set({ bio: newBio }),
+
+    isMentor,
   };
 }
 
 export default function ProfilePage() {
-  const { name, setName, phone } = useUserProfile();
+  const { name, setName, phone, resume, setResume, bio, setBio, isMentor } =
+    useUserProfile();
 
   if (!name) {
     return <Loading />;
@@ -33,6 +48,17 @@ export default function ProfilePage() {
       <Col md={7}>
         <PrimaryField label="شماره همراه" defaultValue={fa(phone ?? "")} />
         <Editable label="نام" value={name ?? ""} onChange={setName} />
+        {isMentor && (
+          <Editable label="مدرک تحصیلی" value={bio ?? ""} onChange={setBio} />
+        )}
+        {isMentor && (
+          <Editable
+            multiline
+            label="سوابق"
+            value={resume ?? ""}
+            onChange={setResume}
+          />
+        )}
       </Col>
     </Row>
   );

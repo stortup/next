@@ -8,16 +8,28 @@ export interface IMentor {
   hourly_cost: number;
 }
 
+export interface IMentorFull extends IMentor {
+  is_mentor: true;
+  phone: string;
+  email: string;
+}
+
 export interface ITime {
-  id: string;
-  start_date: string;
+  date: string;
+  duration: number; // in minutes
   reserved: boolean;
 }
 
 export interface IUser {
+  is_mentor: false;
   id: string;
   name: string;
   email: string | null;
   phone: string | null;
   avatar_url: string;
+}
+
+export interface IUserFull extends IUser {
+  phone: string | null;
+  email: string | null;
 }

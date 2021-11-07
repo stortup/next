@@ -1,4 +1,4 @@
-import { fetcher } from "client/client";
+import { fetcher, users } from "client/client";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -27,54 +27,49 @@ import { IUser } from "types";
 
 function ProfileDropDown({ user }: { user: IUser }) {
   const [open, toggle] = useState(false);
+  const router = useRouter();
 
   const name = fa(user.name ?? user.phone?.replace("+98", "0") ?? "شما");
 
   return (
     <Dropdown isOpen={open} toggle={() => toggle(!open)}>
-      <DropdownToggle caret>{name}</DropdownToggle>
+      <DropdownToggle outline caret>
+        {name}
+      </DropdownToggle>
       <DropdownMenu>
         <Link href="/profile" passHref>
           <DropdownItem>پروفایل من</DropdownItem>
         </Link>
         <DropdownItem divider></DropdownItem>
-        <DropdownItem>خروج از حساب</DropdownItem>
+        <DropdownItem
+          onClick={() => {
+            users.logout();
+            router.push("/login");
+          }}
+        >
+          خروج از حساب
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
 }
 
 function Header() {
-  const [isOpen, setIsOpen] = useState(false);
   const { data, error } = useSWR("/users/get_me", fetcher);
 
-  const toggle = () => setIsOpen(!isOpen);
-
   return (
-    <Navbar dark sticky="top" className="bg-dark flex-md-nowrap p-0 shadow">
-      <Link href="/" passHref>
-        <NavbarBrand className="col-md-3 col-lg-2 me-0 px-3">
-          استورت آپ
-        </NavbarBrand>
-      </Link>
-
-      <NavbarToggler
-        onClick={toggle}
-        className="d-md-none position-absolute d"
-      />
-      <Collapse isOpen={isOpen} navbar></Collapse>
+    <Navbar
+      sticky="top"
+      className="flex-md-nowrap p-0 shadow-sm bg-light pt-1"
+      light
+    >
       <Input
-        className="form-control form-control-dark w-100"
+        className="form-control form-control-light w-100 rounded me-2"
         type="text"
-        placeholder="Search"
+        placeholder="جستجو"
         aria-label="Search"
       />
-      {/* <Nav navbar>
-        <NavItem className="text-nowrap">
-          <NavLink className="px-3">{usernameLabel}</NavLink>
-        </NavItem>
-      </Nav> */}
-      <ProfileDropDown user={data} />
+      {data && <ProfileDropDown user={data} />}
     </Navbar>
   );
 }
@@ -87,8 +82,9 @@ function Sidebar() {
       tag="nav"
       md={3}
       lg={2}
-      className="d-md-block bg-light sidebar collapse"
+      className="d-md-block bg-light sidebar collapse pt-0"
     >
+      <p className="text fw-lighter fs-3 ms-3 my-2 gray">استورت آپ</p>
       <div className="position-sticky pt-3">
         <Nav pills className="flex-column mb-auto">
           <SidebarItem
@@ -97,7 +93,7 @@ function Sidebar() {
             currentPath={router.pathname}
           />
           <SidebarItem
-            label="زمان های منتورینگ من"
+            label="تعیین زمان منتورینگ"
             href="/my-times"
             currentPath={router.pathname}
             icon={Clock}
@@ -132,7 +128,7 @@ function SidebarItem({
   return (
     <NavItem className="px-1">
       <Link href={href ?? "#"} passHref>
-        <NavLink active={active} aria-current="page">
+        <NavLink active={active} aria-current="page" className="fw-light">
           <I className="me-2" size={18} color="gray" />
 
           {label}
@@ -153,13 +149,15 @@ function SideBarGroupLabel() {
 export const Dashboard: NextPage<{ title: string }> = ({ children, title }) => {
   return (
     <>
-      <Header />
       <Sidebar />
-      <Col tag="main" md={9} lg={10} className="ms-sm-auto px-md-2">
-        <div className="my-3 pb-2">
-          <h3 className="fw-100">{title}</h3>
+      <Col tag="main" md={9} lg={10} className="ms-sm-auto">
+        <Header />
+        <div className="px-md-3">
+          <div className="my-3 pb-2 border-bottom">
+            <h3 className="fw-lighter">{title}</h3>
+          </div>
+          {children}
         </div>
-        {children}
       </Col>
     </>
   );

@@ -5,10 +5,12 @@ export function Editable({
   value,
   onChange,
   label,
+  multiline,
 }: {
   value: string;
   onChange: (value: string) => void;
   label: string;
+  multiline?: boolean;
 }) {
   const [newValue, setValue] = useState(value ?? "");
 
@@ -21,13 +23,13 @@ export function Editable({
   const [hasError, setError] = useState(!newValue);
 
   return (
-    <>
+    <div className="mb-3">
       <label htmlFor="code1">{label}</label>
 
       <BaseInput
         className="form-control"
         id="code1"
-        type="text"
+        type={multiline ? "textarea" : "text"}
         placeholder=""
         onChange={(e) => setValue(e.target.value)}
         onBlur={() => setError(!valid)}
@@ -61,6 +63,6 @@ export function Editable({
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -21,8 +21,12 @@ import { GetServerSideProps } from "next";
 import { IMentor, ITime } from "types";
 import { fa } from "utils/persian";
 import moment, { Moment } from "jalali-moment";
+import { compareMoment } from "components/DateTimePicker/utils";
+import { ErrorHandler } from "components/ErrorHandler";
+import { Loading } from "components/Loading";
 
 function Cart({ price, disable }: { price: number; disable?: boolean }) {
+  console.log(price);
   return (
     <>
       <h4 className="d-flex justify-content-between align-items-center mb-3">
@@ -90,29 +94,27 @@ export default function ReserveMentor({
   mentorId: string;
   timeId?: string;
 }) {
-  const [loading, setLoading] = useState(true);
+  const [selectedDate, setDate] = useState<ITime | null>(null);
   const { data, error } = useSWR<IMentor>(
     `/mentors/get_mentor?mentor_id=${mentorId}`,
     fetcher
   );
 
-  const [selectedDate, setDate] = useState<ITime | null>(null);
+  // useEffect(() => {
+  //   if (loading === true && data) {
+  //     setDate(data.times.find((time) => time.id === timeId) ?? selectedDate);
+  //     setLoading(false);
+  //   }
+  // });
 
-  useEffect(() => {
-    if (loading === true && data) {
-      setDate(data.times.find((time) => time.id === timeId) ?? selectedDate);
-      setLoading(false);
-    }
-  });
-
-  if (error) return <div>failed to load</div>;
-  if (!data) return <div>loading...</div>;
+  if (error) return <ErrorHandler error={error} />;
+  if (!data) return <Loading />;
 
   const timeTitle = selectedDate
     ? `زمان انتخاب شده: ${fa(
-        moment(selectedDate.start_date)
+        moment(selectedDate.date)
           .locale("fa")
-          .format("ddd D MMM YYYY - ساعت HH:MM")
+          .format("ddd D MMM YYYY - ساعت HH:mm")
       )}`
     : "زمان انتخاب شده";
 
@@ -124,14 +126,13 @@ export default function ReserveMentor({
           <CardHeader>{timeTitle}</CardHeader>
           <CardBody>
             <UserDateTimePicker
-              availableDates={data.times.map((d) => d.start_date)}
+              availableDates={data.times.map((d) => d.date)}
               reservedDates={[]}
-              selectedDate={selectedDate?.start_date ?? null}
+              selectedDate={selectedDate?.date ?? null}
               onDate={(date) => {
-                console.log("setDate", date);
                 if (date === null) return setDate(null);
                 for (const source of data.times) {
-                  const isSame = compareDates(moment(source.start_date), date);
+                  const isSame = compareMoment(moment(source.date), date);
                   if (isSame) return setDate(source);
                 }
               }}
@@ -151,18 +152,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       mentorId: context.params?.mentorId,
-      timeId: context.query?.timeId ?? null,
+      time: context.query?.time ?? null,
     },
   };
 };
 
 ReserveMentor.title = "رزرو منتور";
 ReserveMentor.dashboard = true;
-
-function compareDates(a: Moment, b: Moment) {
-  if (a.jYear() !== b.jYear()) return false;
-  if (a.jMonth() !== b.jMonth()) return false;
-  if (a.jDate() !== b.jDate()) return false;
-  if (a.hour() !== b.hour()) return false;
-  return true;
-}

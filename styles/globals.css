@@ -25,7 +25,7 @@ a {
 /* Custom */
 .btn,
 input {
-  border-radius: 0.1rem !important;
+  border-radius: 0.1rem;
 }
 
 .sidebar {
@@ -109,4 +109,8 @@ input {
 .form-control-dark:focus {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+th {
+  border-bottom: none !important;
 }

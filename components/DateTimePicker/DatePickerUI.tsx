@@ -7,20 +7,29 @@ function Day({
   selected,
   disable,
   highlighted,
+  outlined,
 }: {
   day: number;
   selected?: boolean;
   highlighted?: boolean;
   disable?: boolean;
+  outlined?: boolean;
   onClick: (day: number) => void;
 }) {
   let color = "";
   if (highlighted) color = "secondary";
   if (selected) color = "primary";
+  if (outlined) color = "primary";
 
   return (
     <th className="text-center">
-      <Button disabled={disable} color={color} onClick={() => onClick(day)}>
+      <Button
+        disabled={disable}
+        outline={outlined}
+        color={color}
+        className="rounded-circle"
+        onClick={() => onClick(day)}
+      >
         {fa(day)}
       </Button>
     </th>
@@ -34,7 +43,7 @@ function NullDay() {
 function DayLabel({ text }: { text: string }) {
   return (
     <th>
-      <p className="text-center">{text}</p>
+      <p className="text-center mb-0">{text}</p>
     </th>
   );
 }
@@ -42,13 +51,13 @@ function DayLabel({ text }: { text: string }) {
 function WeekDayHeader() {
   return (
     <tr>
-      <DayLabel text="ش" />
-      <DayLabel text="ی" />
-      <DayLabel text="د" />
-      <DayLabel text="س" />
-      <DayLabel text="چ" />
-      <DayLabel text="پ" />
-      <DayLabel text="ج" />
+      <DayLabel text="شنبه" />
+      <DayLabel text="یک‌شنبه" />
+      <DayLabel text="دوشنبه" />
+      <DayLabel text="سه‌شنبه" />
+      <DayLabel text="چهارشنبه" />
+      <DayLabel text="پنجشنبه" />
+      <DayLabel text="جمعه" />
     </tr>
   );
 }
@@ -58,6 +67,7 @@ export function DatePickerUI({
   daysInMonth,
   onDayClicked,
   selectedDays,
+  outlinedDays,
   highlightedDays,
   disabledDays,
 }: {
@@ -67,6 +77,7 @@ export function DatePickerUI({
   selectedDays: number[];
   highlightedDays: number[];
   disabledDays: number[];
+  outlinedDays?: number[];
 }) {
   const weeks: JSX.Element[] = [];
 
@@ -86,6 +97,8 @@ export function DatePickerUI({
         days.push(<Day disable day={day} onClick={onDayClicked} />);
       } else if (highlightedDays.includes(day)) {
         days.push(<Day highlighted day={day} onClick={onDayClicked} />);
+      } else if (outlinedDays?.includes(day)) {
+        days.push(<Day outlined day={day} onClick={onDayClicked} />);
       } else {
         days.push(<Day day={day} onClick={onDayClicked} />);
       }
@@ -100,8 +113,7 @@ export function DatePickerUI({
       <thead
         style={{
           color: "#000",
-          backgroundColor: "#eee",
-          borderStyle: "none",
+          backgroundColor: "#F8F9FA",
         }}
       >
         <WeekDayHeader />
