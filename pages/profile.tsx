@@ -24,6 +24,8 @@ function useUserProfile() {
   const isMentor = user?.is_mentor;
 
   return {
+    loading: !user,
+
     name: user?.name,
     setName: (newName: string) => set({ name: newName }),
 
@@ -59,6 +61,7 @@ interface Category {
 
 export default function ProfilePage() {
   const {
+    loading,
     name,
     setName,
     phone,
@@ -77,9 +80,7 @@ export default function ProfilePage() {
     isMentor,
   } = useUserProfile();
 
-  if (!name) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
     <Row>
