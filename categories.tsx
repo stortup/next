@@ -8,3 +8,7 @@ export const allCategories = [
     label: "استارتاپ",
   },
 ];
+
+export function getCategory(id: string) {
+  return allCategories.find((category) => category.id === id)!;
+}

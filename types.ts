@@ -6,6 +6,7 @@ export interface IMentor {
   bio: string;
   times: ITime[];
   hourly_cost: number;
+  categories: string[];
 }
 
 export interface IMentorFull extends IMentor {

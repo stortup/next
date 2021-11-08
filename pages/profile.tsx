@@ -7,7 +7,7 @@ import { Loading } from "components/Loading";
 import { CategoryPicker } from "components/CategoryPicker/CategoryPicker";
 import { fa } from "utils/persian";
 import { useState } from "react";
-import { allCategories } from "categories";
+import { allCategories, getCategory } from "categories";
 
 function useUserProfile() {
   const {
@@ -43,8 +43,9 @@ function useUserProfile() {
     hourlyCost: isMentor ? user?.hourly_cost : undefined,
     setHourlyCost: (newValue: number) => set({ hourly_cost: newValue }),
 
-    categories,
-    setCategories,
+    categories: isMentor ? user?.categories.map(getCategory) : undefined,
+    setCategories: (newValue: Category[]) =>
+      set({ categories: newValue.map((c) => c.id) }),
 
     isMentor,
   };
@@ -101,7 +102,7 @@ export default function ProfilePage() {
             />
             <CategoryPicker
               label="حوزه های فعالیت"
-              selected={categories}
+              selected={categories ?? []}
               all={allCategories}
               setSelected={setCategories}
             />
