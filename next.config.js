@@ -5,4 +5,7 @@ module.exports = {
     domains: ["i.morioh.com"],
     formats: ["image/avif", "image/webp"],
   },
+  env: {
+    BASE_URL: process.env.BASE_URL,
+  },
 };
