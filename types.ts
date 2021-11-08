@@ -13,6 +13,7 @@ export interface IMentorFull extends IMentor {
   is_mentor: true;
   phone: string;
   email: string;
+  bank_no: string | null;
 }
 
 export interface ITime {

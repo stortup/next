@@ -16,8 +16,6 @@ function useUserProfile() {
     mutate,
   } = useSWR<IUserFull | IMentorFull>("/users/get_me", fetcher);
 
-  const [categories, setCategories] = useState<Category[]>([]);
-
   async function set(replacement: Partial<IUserFull | IMentorFull>) {
     mutate({ ...user!, ...(replacement as any) }, false);
     await fetcher("/users/edit_profile", replacement);
@@ -47,6 +45,9 @@ function useUserProfile() {
     setCategories: (newValue: Category[]) =>
       set({ categories: newValue.map((c) => c.id) }),
 
+    bankNo: isMentor ? user?.bank_no : undefined,
+    setBankNo: (newValue: string) => set({ bank_no: newValue }),
+
     isMentor,
   };
 }
@@ -71,6 +72,8 @@ export default function ProfilePage() {
     setHourlyCost,
     categories,
     setCategories,
+    bankNo,
+    setBankNo,
     isMentor,
   } = useUserProfile();
 
@@ -89,13 +92,14 @@ export default function ProfilePage() {
           <>
             <Editable label="مدرک تحصیلی" value={bio ?? ""} onChange={setBio} />
             <Editable
-              multiline
               label="سوابق"
+              type="textarea"
               value={resume ?? ""}
               onChange={setResume}
             />
             <Editable
               label="هزینه ساعتی منتورینگ (تومان)"
+              type="number"
               value={hourlyCost?.toString() ?? ""}
               pattern={/^\d+$/}
               onChange={(value) => setHourlyCost(Number(value))}
@@ -105,6 +109,13 @@ export default function ProfilePage() {
               selected={categories ?? []}
               all={allCategories}
               setSelected={setCategories}
+            />
+            <Editable
+              label="شماره جساب"
+              type="number"
+              value={bankNo ?? ""}
+              pattern={/^\d+$/}
+              onChange={setBankNo}
             />
           </>
         )}

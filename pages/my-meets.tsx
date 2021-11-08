@@ -52,7 +52,7 @@ function Meet({ peer, date }: Meet) {
   return (
     <Card className="shadow-sm">
       <Row className="g-0">
-        <Col sm={6} className="d-flex align-items-stretch">
+        <Col sm={9} className="d-flex align-items-stretch">
           <CardBody className="d-flex flex-column">
             <Row>
               {peer.avatar_url && (
@@ -75,7 +75,7 @@ function Meet({ peer, date }: Meet) {
             <CardText>{`راه ارتباطی: ${peer.email}`}</CardText>
           </CardBody>
         </Col>
-        <Col sm={6}>
+        <Col sm={3}>
           <CardBody className="d-flex flex-column text-end">
             <CardText className="mb-1">
               {fa(moment(date).locale("fa").format("YYYY/MM/DD"))}

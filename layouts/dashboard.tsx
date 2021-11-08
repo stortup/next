@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { Clock, Icon, Person } from "react-bootstrap-icons";
+import { Clock, Icon, Person, ClipboardPlus } from "react-bootstrap-icons";
 import {
   Col,
   Dropdown,
@@ -17,7 +17,7 @@ import {
   NavLink,
 } from "reactstrap";
 import useSWR from "swr";
-import { IMentorFull, IUser } from "types";
+import { IMentorFull, IUser, IUserFull } from "types";
 import { fa } from "utils/persian";
 
 function ProfileDropDown({ user }: { user: IUser }) {
@@ -70,7 +70,10 @@ function Header() {
 }
 
 function Sidebar() {
-  const { data, error } = useSWR<IMentorFull>("/users/get_me", fetcher);
+  const { data, error } = useSWR<IUserFull | IMentorFull>(
+    "/users/get_me",
+    fetcher
+  );
 
   const router = useRouter();
 
@@ -101,8 +104,16 @@ function Sidebar() {
             label="قرارهای ملاقات من"
             href="/my-meets"
             currentPath={router.pathname}
+            icon={ClipboardPlus}
           />
-          <SidebarItem label="خرید ها" currentPath={router.pathname} />
+          {data?.is_mentor === false && (
+            <SidebarItem
+              label="منتور شدن"
+              href="/become-mentor"
+              currentPath={router.pathname}
+              icon={ClipboardPlus}
+            />
+          )}
         </Nav>
 
         <SideBarGroupLabel />
