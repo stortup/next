@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4004";
+const BASE_URL = process.env.BASE_URL ?? "http://localhost:4004";
 
 function postData(url: string, data: any) {
   return fetch(url, {
