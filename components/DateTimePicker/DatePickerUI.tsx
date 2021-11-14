@@ -16,7 +16,7 @@ function Day({
   outlined?: boolean;
   onClick: (day: number) => void;
 }) {
-  let color = "";
+  let color = "white";
   if (highlighted) color = "secondary";
   if (selected) color = "primary";
   if (outlined) color = "primary";
@@ -27,7 +27,8 @@ function Day({
         disabled={disable}
         outline={outlined}
         color={color}
-        className="rounded-circle"
+        className="rounded-circle p-0"
+        style={{ width: "40px", height: "40px" }}
         onClick={() => onClick(day)}
       >
         {fa(day)}

@@ -1,4 +1,4 @@
-import { users } from "client/client";
+import { fetcher } from "client/client";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { Col, Container, Row, Button } from "reactstrap";
@@ -17,7 +17,9 @@ function EnterPhoneStep({
 
   const sendCode = async () => {
     setLoading(true);
-    await users.sendOtp(phone!.replace("0", "+98"));
+    await fetcher("/users/send_code", {
+      phone: phone!.replace("0", "+98"),
+    });
     onComplete(phone!);
   };
 
@@ -60,10 +62,10 @@ function EnterCodeStep({
 
   const login = async () => {
     setLoading(true);
-    const { access_token } = await users.enter(
-      phone.replace("0", "+98"),
-      code!
-    );
+    const { access_token } = await fetcher("/users/enter_user", {
+      phone: phone.replace("0", "+98"),
+      code,
+    });
     next(access_token);
   };
 

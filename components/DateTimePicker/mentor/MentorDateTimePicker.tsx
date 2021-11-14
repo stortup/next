@@ -61,11 +61,19 @@ function PickerHeader({
 }) {
   return (
     <div className="d-flex justify-content-between p-3">
-      <Button color="" onClick={() => onMonthChange(-1)}>
+      <Button
+        color="white"
+        className="btn-link"
+        onClick={() => onMonthChange(-1)}
+      >
         <ArrowRight size={30} />
       </Button>
       <h2 className="text-center">{title}</h2>
-      <Button color="" onClick={() => onMonthChange(1)}>
+      <Button
+        color="white"
+        className="btn-link"
+        onClick={() => onMonthChange(1)}
+      >
         <ArrowLeft size={30} />
       </Button>
     </div>

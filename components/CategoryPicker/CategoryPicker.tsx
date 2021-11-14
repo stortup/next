@@ -17,12 +17,12 @@ interface Category {
 
 function Chip({ id, label, onDelete }: Category & { onDelete: () => void }) {
   return (
-    <Badge color="info" className="p-0 ps-1 me-1 fs-6">
+    <span className="badge chip bg-info py-1 pe-0 me-1 fs-6">
       {label}
-      <Button onClick={onDelete} className="p-0 ms-3 text-white" color="">
+      <Button onClick={onDelete} className="p-0 ms-3 text-white" color="info">
         <X size={25} className="me-0" />
       </Button>
-    </Badge>
+    </span>
   );
 }
 
@@ -55,7 +55,11 @@ export function CategoryPicker({
         {
           <Dropdown tag="span" isOpen={open} toggle={() => toggle(!open)}>
             {available.length > 0 && (
-              <DropdownToggle color="" size="sm" className="p-0">
+              <DropdownToggle
+                color="white"
+                size="sm"
+                className="d-inline-block p-0 btn-link"
+              >
                 <Plus width={25} height={25} />
               </DropdownToggle>
             )}

@@ -1,5 +1,6 @@
-import "bootstrap/dist/css/bootstrap.rtl.css";
-import "../styles/globals.css";
+// import "bootstrap/dist/css/bootstrap.rtl.css";
+// import "mdb-ui-kit/css/mdb.rtl.min.css";
+import "../styles/globals.scss";
 import type { AppProps } from "next/app";
 import { NextPage } from "next";
 import Head from "next/head";
@@ -9,6 +10,7 @@ import { Dashboard } from "../layouts/dashboard";
 type NextPageWithLayout = NextPage & {
   dashboard?: boolean;
   title?: string;
+  searchBar?: boolean;
 };
 
 type AppPropsWithLayout = AppProps & {
@@ -20,7 +22,7 @@ export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   let page: ReactNode;
   if (Component.dashboard) {
     page = (
-      <Dashboard title={title}>
+      <Dashboard title={title} searchBar={Component.searchBar ?? false}>
         <Component {...pageProps} />
       </Dashboard>
     );

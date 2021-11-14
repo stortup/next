@@ -29,13 +29,15 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
             <CardBody className="d-flex flex-column">
               <Row>
                 <Col className="col-auto">
-                  <Image
-                    alt="avatar_url"
-                    className="rounded-circle"
-                    src={avatar_url}
-                    width={50}
-                    height={50}
-                  />
+                  {avatar_url && (
+                    <Image
+                      alt="avatar_url"
+                      className="rounded-circle"
+                      src={avatar_url}
+                      width={50}
+                      height={50}
+                    />
+                  )}
                 </Col>
                 <Col>
                   <CardTitle className="mb-0 fw-bold">{name}</CardTitle>
@@ -97,7 +99,7 @@ function Time({
       tag="button"
       active={selected}
       className={cn}
-      style={{ fontSize: "0.9rem" }}
+      style={{ fontSize: "0.85rem" }}
       disabled={reserved}
       onClick={onClick}
     >

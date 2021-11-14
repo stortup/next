@@ -80,9 +80,9 @@ export function Editable({
             تایید
           </Button>
           <Button
-            color="none"
+            color="white"
+            className="btn-link"
             size="sm"
-            outline
             onClick={() => setValue(value)}
           >
             انصراف

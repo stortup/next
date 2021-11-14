@@ -13,7 +13,10 @@ import urlcat from "urlcat";
 export default function MentorsPage() {
   const router = useRouter();
   const { data, error } = useSWR<IMentor[]>(
-    urlcat("/mentors/get_all_mentors", { category: router.query.category }),
+    urlcat("/mentors/get_all_mentors", {
+      category: router.query.category,
+      search: router.query.search,
+    }),
     fetcher
   );
 
@@ -52,4 +55,5 @@ function Categories({ current }: { current?: string }) {
 }
 
 MentorsPage.dashboard = true;
+MentorsPage.searchBar = true;
 MentorsPage.title = "منتور ها";

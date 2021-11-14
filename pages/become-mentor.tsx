@@ -1,12 +1,10 @@
-import { fetcher } from "client/client";
-import { Input, Button, Row, Col } from "reactstrap";
-import useSWR from "swr";
+import { fetcher, upload } from "client/client";
+import { Alert, Button, Row, Col, Input } from "reactstrap";
 import { IMentorFull, IUserFull } from "types";
 import { Editable } from "components/Editable";
-import { Loading } from "components/Loading";
 import { CategoryPicker } from "components/CategoryPicker/CategoryPicker";
 import { fa } from "utils/persian";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { allCategories, getCategory } from "categories";
 
 interface BecomeMentorParams {
@@ -15,6 +13,7 @@ interface BecomeMentorParams {
   hourly_cost: number;
   categories: string[];
   bank_no: string;
+  file_id: string;
 }
 
 function useUserProfile() {
@@ -24,6 +23,17 @@ function useUserProfile() {
   //   mutate,
   // } = useSWR<IUserFull | IMentorFull>("/users/get_me", fetcher);
   const [params, setParams] = useState<Partial<BecomeMentorParams>>({});
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  console.log(params);
+  const valid =
+    !!params.resume &&
+    !!params.bio &&
+    !!params.hourly_cost &&
+    !!params.file_id &&
+    params.categories &&
+    params.categories.length > 0;
 
   async function set(replacement: Partial<BecomeMentorParams>) {
     setParams({ ...params!, ...replacement });
@@ -31,7 +41,26 @@ function useUserProfile() {
     // await fetcher("/users/edit_profile", replacement);
   }
 
+  function unset(key: keyof BecomeMentorParams) {
+    const newParams = { ...params };
+    delete newParams[key];
+    setParams(newParams);
+  }
+
+  async function send() {
+    setSending(true);
+    await fetcher("/mentors/send_mentoring_request", params);
+    setSent(true);
+    // fetcher("/users/become_mentor", params).then(() => {
+    //   setSent(false);
+    // });
+  }
+
   return {
+    disabled: !valid || sending,
+    sent,
+    send,
+
     resume: params.resume,
     setResume: (newResume: string) => set({ resume: newResume }),
 
@@ -47,6 +76,10 @@ function useUserProfile() {
 
     bankNo: params.bank_no,
     setBankNo: (newValue: string) => set({ bank_no: newValue }),
+
+    file_id: params.file_id,
+    setFileId: (newValue: string | null) =>
+      newValue ? set({ file_id: newValue }) : unset("file_id"),
   };
 }
 
@@ -57,6 +90,10 @@ interface Category {
 
 export default function BecomeMentorPage() {
   const {
+    disabled,
+    sent,
+    send,
+    // form params
     resume,
     setResume,
     bio,
@@ -67,10 +104,12 @@ export default function BecomeMentorPage() {
     setCategories,
     bankNo,
     setBankNo,
+    setFileId,
   } = useUserProfile();
 
   return (
     <Row>
+      {sent && <SuccessMessage />}
       <Col md={7}>
         {
           <>
@@ -78,7 +117,7 @@ export default function BecomeMentorPage() {
               label="مدرک تحصیلی"
               value={bio ?? ""}
               onChange={setBio}
-              minLength={10}
+              minLength={5}
             />
             <Editable
               type="textarea"
@@ -107,7 +146,11 @@ export default function BecomeMentorPage() {
               pattern={/^\d+$/}
               onChange={setBankNo}
             />
-            <Button color="primary">ارسال درخواست</Button>
+            <UploadFile onChange={setFileId} />
+
+            <Button disabled={disabled} onClick={send} color="primary">
+              ارسال درخواست
+            </Button>
           </>
         }
       </Col>
@@ -117,3 +160,44 @@ export default function BecomeMentorPage() {
 
 BecomeMentorPage.dashboard = true;
 BecomeMentorPage.title = "منتور شدن";
+
+function UploadFile({
+  onChange,
+}: {
+  onChange: (file_id: string | null) => void;
+}) {
+  const file = useRef(null);
+
+  return (
+    <>
+      <label>آپلود مدرک</label>
+      <Input
+        className="mb-3"
+        type="file"
+        id="upload"
+        ref={file}
+        onChange={async (e) => {
+          const formData = new FormData();
+          if (!e.target.files) return onChange(null);
+          if (!e.target.files[0]) return onChange(null);
+
+          formData.append("file", e.target.files[0]);
+          // setUploading(true);
+          const { id } = await upload(formData);
+          console.log("file_id", id);
+          onChange(id);
+          // setUploading(false);
+        }}
+      />
+    </>
+  );
+}
+
+function SuccessMessage() {
+  return (
+    <Alert>
+      <h4 className="alert-heading">درخواست منتورینگ ارسال شد</h4>
+      <p>با تشکر از شما برای تکمیل درخواست شما به حال بررسی می شود.</p>
+    </Alert>
+  );
+}

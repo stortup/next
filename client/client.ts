@@ -1,19 +1,10 @@
-const BASE_URL = process.env.BASE_URL ?? "http://localhost:4004";
+export const BASE_URL = process.env.BASE_URL ?? "http://localhost:4004";
 
-function postData(url: string, data: any) {
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-}
+export async function fetcher(url: `/${string}`, body?: any) {
+  const accessToken = localStorage.getItem("access_token");
+  const headers: Record<string, string> = {};
 
-export async function fetcher(url: string, body?: any) {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-  };
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
 
   if (body) headers["Content-Type"] = "application/json";
 
@@ -23,36 +14,46 @@ export async function fetcher(url: string, body?: any) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  console.log(url, `${response.status} ${response.statusText}`);
+
+  if (response.status === 401) throw new Error("UNAUTHORIZED");
   if (response.status === 403) throw new Error("FORBIDDEN");
-  return response.json();
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+
+  // if response body is empty return null
+
+  if (response.headers.get("Content-Type")?.includes("application/json")) {
+    return response.json();
+  }
+
+  return null;
 }
 
-function assert2xx(response: Response) {
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(`POST failed ${response.status} ${response.statusText}`);
+export function logout() {
+  localStorage.clear();
+}
+
+export async function upload(form: FormData) {
+  const accessToken = localStorage.getItem("access_token");
+  const headers: Record<string, string> = {};
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+  const response = await fetch(BASE_URL + "/files/upload", {
+    method: "POST",
+    headers,
+    body: form,
+  });
+
+  assertOk(response);
+
+  const body = await response.json();
+  return body as { id: string };
+}
+
+function assertOk(response: Response) {
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
   }
 }
-
-export const users = {
-  async sendOtp(phone: string) {
-    const response = await postData(BASE_URL + "/users/send_code", {
-      phone,
-    });
-
-    assert2xx(response);
-  },
-  async enter(phone: string, code: string) {
-    const response = await postData(BASE_URL + "/users/enter_user", {
-      phone,
-      code,
-    });
-
-    assert2xx(response);
-    return await response.json() as { access_token: string };
-  },
-  logout() {
-    localStorage.clear();
-  },
-};
-
-export const mentors = {};

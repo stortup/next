@@ -16,7 +16,7 @@ import {
 import Image from "next/image";
 import { UserDateTimePicker } from "components/DateTimePicker/user/UserDateTimePicker";
 import useSWR from "swr";
-import { fetcher, mentors } from "client/client";
+import { fetcher } from "client/client";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { IMentor, ITime } from "types";
@@ -166,15 +166,17 @@ function Cart({
 function Mentor({ mentor }: { mentor: IMentor }) {
   return (
     <div className="d-flex flex-row pb-3">
-      <div className="p-1">
-        <Image
-          alt="mentor avatar"
-          className="rounded-circle"
-          src={mentor.avatar_url}
-          width={70}
-          height={70}
-        />
-      </div>
+      {mentor.avatar_url && (
+        <div className="p-1">
+          <Image
+            alt="mentor avatar"
+            className="rounded-circle"
+            src={mentor.avatar_url}
+            width={70}
+            height={70}
+          />
+        </div>
+      )}
 
       <div className="p-1">
         <h5 className="title mb-0">{mentor.name}</h5>
