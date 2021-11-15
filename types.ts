@@ -27,13 +27,13 @@ export interface IUser {
   is_mentor: false;
   id: string;
   name: string;
-  email: string | null;
-  phone: string | null;
+  email?: string;
+  phone?: string;
   avatar_url: string;
 }
 
 export interface IUserFull extends IUser {
   is_admin: boolean;
-  phone: string | null;
-  email: string | null;
+  phone?: string;
+  email?: string;
 }
