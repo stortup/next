@@ -18,14 +18,14 @@ import { IUser } from "types";
 import { fa } from "utils/persian";
 
 export function Header({ searchBar }: { searchBar: boolean }) {
-  const { data, error } = useSWR("/users/get_me", fetcher);
+  const { data, error } = useSWR<IUser>("/users/get_me", fetcher);
 
   if (error) return <ErrorHandler error={error} />;
 
   return (
     <Navbar
       sticky="top"
-      className="flex-md-nowrap p-0 shadow-sm bg-light pt-1"
+      className="flex-md-nowrap p-0 shadow-sm bg-light py-1"
       light
     >
       {searchBar && <SearchBar />}
@@ -37,6 +37,8 @@ export function Header({ searchBar }: { searchBar: boolean }) {
 function ProfileDropDown({ user }: { user: IUser }) {
   const [open, toggle] = useState(false);
   const router = useRouter();
+
+  console.log(user);
 
   const name = fa(user.name ?? user.phone?.replace("+98", "0") ?? "شما");
 

@@ -10,27 +10,39 @@ import { Loading } from "components/Loading";
 import { useRouter } from "next/router";
 import urlcat from "urlcat";
 
+function queryToString(q: string | undefined | string[]): string | undefined {
+  if (!q) return q;
+  if (Array.isArray(q)) return q[0];
+  return q;
+}
+
 export default function MentorsPage() {
   const router = useRouter();
+  const search = queryToString(router.query.search);
+  const category = queryToString(router.query.category);
+
   const { data, error } = useSWR<IMentor[]>(
     urlcat("/mentors/get_all_mentors", {
-      category: router.query.category,
-      search: router.query.search,
+      category,
+      search,
     }),
     fetcher
   );
 
   if (!data) return <Loading />;
+  const hasResult = data.length > 0;
 
   return (
-    <>
-      <Categories current={router.query.category as string} />
+    <div className="w-100">
+      <Categories current={category} />
+      <SearchResult query={search} />
       <Row className="row-cols-1 row-cols-lg-2 g-3">
         {data.map((e, i) => (
           <Mentor key={i} {...e} />
         ))}
+        {!hasResult && <NoResult />}
       </Row>
-    </>
+    </div>
   );
 }
 
@@ -50,6 +62,26 @@ function Categories({ current }: { current?: string }) {
           </Badge>
         </Link>
       ))}
+    </div>
+  );
+}
+
+function SearchResult({ query }: { query?: string }) {
+  if (!query) return null;
+
+  const title = `نتایج جستجو برای "${query}"`;
+
+  return (
+    <div className="mt-1">
+      <h4>{title}</h4>
+    </div>
+  );
+}
+
+function NoResult() {
+  return (
+    <div className="w-100 text-center mt-4">
+      <h5 className="fw-light">نتیجه ای یافت نشد</h5>
     </div>
   );
 }

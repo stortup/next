@@ -2,6 +2,7 @@ import { fetcher, upload } from "client/client";
 import { Alert, Button, Row, Col, Input } from "reactstrap";
 import { IMentorFull, IUserFull } from "types";
 import { Editable } from "components/Editable";
+import { UploadFile } from "components/Upload";
 import { CategoryPicker } from "components/CategoryPicker/CategoryPicker";
 import { fa } from "utils/persian";
 import { useRef, useState } from "react";
@@ -77,7 +78,7 @@ function useUserProfile() {
     bankNo: params.bank_no,
     setBankNo: (newValue: string) => set({ bank_no: newValue }),
 
-    file_id: params.file_id,
+    fileId: params.file_id,
     setFileId: (newValue: string | null) =>
       newValue ? set({ file_id: newValue }) : unset("file_id"),
   };
@@ -104,6 +105,7 @@ export default function BecomeMentorPage() {
     setCategories,
     bankNo,
     setBankNo,
+    fileId,
     setFileId,
   } = useUserProfile();
 
@@ -146,7 +148,11 @@ export default function BecomeMentorPage() {
               pattern={/^\d+$/}
               onChange={setBankNo}
             />
-            <UploadFile onChange={setFileId} />
+            <UploadFile
+              label="فایل مدرک"
+              fileId={fileId ?? null}
+              onChange={setFileId}
+            />
 
             <Button disabled={disabled} onClick={send} color="primary">
               ارسال درخواست
@@ -160,38 +166,6 @@ export default function BecomeMentorPage() {
 
 BecomeMentorPage.dashboard = true;
 BecomeMentorPage.title = "منتور شدن";
-
-function UploadFile({
-  onChange,
-}: {
-  onChange: (file_id: string | null) => void;
-}) {
-  const file = useRef(null);
-
-  return (
-    <>
-      <label>آپلود مدرک</label>
-      <Input
-        className="mb-3"
-        type="file"
-        id="upload"
-        ref={file}
-        onChange={async (e) => {
-          const formData = new FormData();
-          if (!e.target.files) return onChange(null);
-          if (!e.target.files[0]) return onChange(null);
-
-          formData.append("file", e.target.files[0]);
-          // setUploading(true);
-          const { id } = await upload(formData);
-          console.log("file_id", id);
-          onChange(id);
-          // setUploading(false);
-        }}
-      />
-    </>
-  );
-}
 
 function SuccessMessage() {
   return (

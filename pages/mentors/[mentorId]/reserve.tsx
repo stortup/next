@@ -1,30 +1,25 @@
-import { useEffect, useState } from "react";
-import {
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionBody,
-  Card,
-  CardHeader,
-  CardBody,
-  Button,
-} from "reactstrap";
-import Image from "next/image";
-import { UserDateTimePicker } from "components/DateTimePicker/user/UserDateTimePicker";
-import useSWR from "swr";
 import { fetcher } from "client/client";
-import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
-import { IMentor, ITime } from "types";
-import { fa } from "utils/persian";
-import moment, { Moment } from "jalali-moment";
+import { Avatar } from "components/Avatar";
+import { UserDateTimePicker } from "components/DateTimePicker/user/UserDateTimePicker";
 import { compareMoment } from "components/DateTimePicker/utils";
 import { ErrorHandler } from "components/ErrorHandler";
 import { Loading } from "components/Loading";
+import moment from "jalali-moment";
+import { GetServerSideProps } from "next";
+import { useState } from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  Row,
+} from "reactstrap";
+import useSWR from "swr";
+import { IMentor, ITime } from "types";
+import { fa } from "utils/persian";
 
 export default function ReserveMentor({
   mentorId,
@@ -166,17 +161,9 @@ function Cart({
 function Mentor({ mentor }: { mentor: IMentor }) {
   return (
     <div className="d-flex flex-row pb-3">
-      {mentor.avatar_url && (
-        <div className="p-1">
-          <Image
-            alt="mentor avatar"
-            className="rounded-circle"
-            src={mentor.avatar_url}
-            width={70}
-            height={70}
-          />
-        </div>
-      )}
+      <div className="p-1">
+        <Avatar url={mentor.avatar_url} />
+      </div>
 
       <div className="p-1">
         <h5 className="title mb-0">{mentor.name}</h5>

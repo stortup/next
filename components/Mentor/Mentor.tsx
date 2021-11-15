@@ -17,6 +17,7 @@ import { fa } from "utils/persian";
 import styles from "../../styles/Mentors.module.css";
 import { IMentor, ITime } from "types";
 import { compareDates } from "components/DateTimePicker/utils";
+import { Avatar } from "components/Avatar";
 
 export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
   const [selectedTime, setTime] = useState<ITime | null>(null);
@@ -29,15 +30,7 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
             <CardBody className="d-flex flex-column">
               <Row>
                 <Col className="col-auto">
-                  {avatar_url && (
-                    <Image
-                      alt="avatar_url"
-                      className="rounded-circle"
-                      src={avatar_url}
-                      width={50}
-                      height={50}
-                    />
-                  )}
+                  <Avatar url={avatar_url} />
                 </Col>
                 <Col>
                   <CardTitle className="mb-0 fw-bold">{name}</CardTitle>
