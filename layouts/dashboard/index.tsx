@@ -5,7 +5,7 @@ import { UserIncompleteProfileAlert } from "./alerts";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 
-export const Dashboard: NextPage<{ title: string; searchBar: boolean }> = ({
+export const Dashboard: NextPage<{ title?: string; searchBar: boolean }> = ({
   children,
   title,
   searchBar,
@@ -17,9 +17,11 @@ export const Dashboard: NextPage<{ title: string; searchBar: boolean }> = ({
         <Header searchBar={searchBar} />
         <UserIncompleteProfileAlert />
         <div className="px-md-3">
-          <div className="my-3 pb-2 border-bottom">
-            <h3 className="fw-lighter">{title}</h3>
-          </div>
+          {title && (
+            <div className="my-3 pb-2 border-bottom">
+              <h3 className="fw-lighter">{title}</h3>
+            </div>
+          )}
           {children}
         </div>
       </Col>

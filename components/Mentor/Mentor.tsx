@@ -23,11 +23,11 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
   const [selectedTime, setTime] = useState<ITime | null>(null);
 
   return (
-    <Col>
-      <Card className="shadow-sm">
-        <Row className="g-0">
-          <Col sm={7} className="d-flex align-items-stretch">
-            <CardBody className="d-flex flex-column">
+    <Col className="d-flex align-items-stretch">
+      <Card className="w-100">
+        <Row className="g-0 h-100">
+          <Col sm={7}>
+            <CardBody className="d-flex flex-column h-100">
               <Row>
                 <Col className="col-auto">
                   <Avatar url={avatar_url} />

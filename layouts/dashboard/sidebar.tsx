@@ -58,6 +58,12 @@ export function Sidebar() {
 
         <Nav pills className="flex-column mb-auto">
           <SideBarGroupLabel name="مدرسه کسب و کار" />
+          <SidebarItem
+            label="دوره ها"
+            href="/courses"
+            currentPath={router.pathname}
+            icon={ClipboardPlus}
+          />
         </Nav>
 
         {data?.is_admin && (

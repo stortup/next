@@ -18,7 +18,7 @@ type AppPropsWithLayout = AppProps & {
 };
 
 export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const title = Component.title ?? "داشبورد استورت آپ";
+  const title = Component.title;
   let page: ReactNode;
   if (Component.dashboard) {
     page = (
@@ -29,6 +29,8 @@ export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   } else {
     page = <Component {...pageProps} />;
   }
+
+  if (!title) return page;
 
   return (
     <>

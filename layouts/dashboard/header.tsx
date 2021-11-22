@@ -23,11 +23,7 @@ export function Header({ searchBar }: { searchBar: boolean }) {
   if (error) return <ErrorHandler error={error} />;
 
   return (
-    <Navbar
-      sticky="top"
-      className="flex-md-nowrap p-0 shadow-sm bg-light py-1"
-      light
-    >
+    <Navbar sticky="top" className="flex-md-nowrap p-0 bg-light py-1" light>
       {searchBar && <SearchBar />}
       {data && <ProfileDropDown user={data} />}
     </Navbar>

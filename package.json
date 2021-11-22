@@ -19,6 +19,7 @@
     "react": "17.0.2",
     "react-bootstrap-icons": "^1.6.1",
     "react-dom": "17.0.2",
+    "react-horizontal-scrolling-menu": "^2.6.1",
     "reactstrap": "^9.0.0",
     "sass": "^1.43.4",
     "swr": "^1.0.1",

@@ -33,7 +33,7 @@ export default function MentorsPage() {
   const hasResult = data.length > 0;
 
   return (
-    <div className="w-100">
+    <>
       <Categories current={category} />
       <SearchResult query={search} />
       <Row className="row-cols-1 row-cols-lg-2 g-3">
@@ -42,7 +42,7 @@ export default function MentorsPage() {
         ))}
         {!hasResult && <NoResult />}
       </Row>
-    </div>
+    </>
   );
 }
 
