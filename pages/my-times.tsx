@@ -13,6 +13,7 @@ import { ITime } from "types";
 
 function useTimes() {
   const [currentDates, _setDates] = useState<Moment[]>([]);
+  const [reservedDates, _setReservedDates] = useState<Moment[]>([]);
   const [changed, setChanged] = useState<boolean>(false);
 
   const {
@@ -22,6 +23,9 @@ function useTimes() {
   } = useSWR<ITime[]>("/mentors/get_my_times", fetcher, {
     onSuccess(times) {
       _setDates(times.map((time) => moment(time.date)));
+      _setReservedDates(
+        times.filter((t) => t.reserved).map((time) => moment(time.date))
+      );
     },
   });
 
@@ -49,6 +53,7 @@ function useTimes() {
 
   return {
     dates: currentDates,
+    reservedDates,
     setDates,
     error,
     save,
@@ -57,13 +62,17 @@ function useTimes() {
 }
 
 export default function MyTimes() {
-  const { dates, error, setDates, save, changed } = useTimes();
+  const { dates, error, setDates, save, changed, reservedDates } = useTimes();
 
   if (error) return <ErrorHandler error={error} />;
 
   return (
     <>
-      <MentorDateTimePicker dates={dates} setDates={setDates} />
+      <MentorDateTimePicker
+        dates={dates}
+        reservedDates={reservedDates}
+        setDates={setDates}
+      />
       <div className="text-center pt-3" onClick={save}>
         <Button disabled={!changed} color="primary">
           ذخیره

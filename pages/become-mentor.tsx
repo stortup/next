@@ -27,7 +27,6 @@ function useUserProfile() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
 
-  console.log(params);
   const valid =
     !!params.resume &&
     !!params.bio &&

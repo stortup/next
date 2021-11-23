@@ -67,6 +67,7 @@ export function DatePickerUI({
   startWeekday,
   daysInMonth,
   onDayClicked,
+  daysDisableByDefault,
   selectedDays,
   outlinedDays,
   highlightedDays,
@@ -75,12 +76,14 @@ export function DatePickerUI({
   startWeekday: number;
   daysInMonth: number;
   onDayClicked: (day: number) => unknown;
+  daysDisableByDefault?: boolean;
   selectedDays: number[];
   highlightedDays: number[];
-  disabledDays: number[];
+  disabledDays?: number[];
   outlinedDays?: number[];
 }) {
   const weeks: JSX.Element[] = [];
+  disabledDays = disabledDays ?? [];
 
   for (let w = 0; w < 6; w++) {
     const days: JSX.Element[] = [];
@@ -101,7 +104,13 @@ export function DatePickerUI({
       } else if (outlinedDays?.includes(day)) {
         days.push(<Day outlined day={day} onClick={onDayClicked} />);
       } else {
-        days.push(<Day day={day} onClick={onDayClicked} />);
+        days.push(
+          <Day
+            disable={daysDisableByDefault}
+            day={day}
+            onClick={onDayClicked}
+          />
+        );
       }
     }
 

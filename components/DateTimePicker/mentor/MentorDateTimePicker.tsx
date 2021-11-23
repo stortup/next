@@ -1,115 +1,45 @@
+import moment, { Moment } from "jalali-moment";
+import { Col, Row } from "reactstrap";
 import { DatePickerUI } from "../DatePickerUI";
-import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
-import styles from "../styles.module.css";
-import { useDatePicker } from "./useMentorDatePicker";
+import { PickerHeader, TimePicker } from "../TimePickerUI";
 import { useKeyPress } from "./useKeyPress";
-import { Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
-import { Moment } from "jalali-moment";
-import { fa } from "utils/persian";
-
-function TimePicker({
-  hidden,
-  selectedTimes,
-  onTimeClicked,
-}: {
-  hidden: boolean;
-  selectedTimes: number[];
-  onTimeClicked: (time: number) => unknown;
-}) {
-  const times: JSX.Element[] = [];
-
-  if (hidden) {
-    return (
-      <div className="d-flex aligns-items-center h-100 border rounded">
-        <div className="row justify-content-center align-self-center w-100">
-          <p className="text-center">تاریخی را انتخاب نکرده اید</p>
-        </div>
-      </div>
-    );
-  }
-
-  for (let i = 8; i < 19; i++) {
-    // if (reserved) cn += " disabled text-decoration-line-through";
-
-    times.push(
-      <ListGroupItem
-        tag="button"
-        active={selectedTimes.includes(i)}
-        onClick={() => onTimeClicked(i)}
-      >
-        {fa(`ساعت ${i} تا ${i + 1}`)}
-      </ListGroupItem>
-    );
-  }
-
-  return (
-    <div
-      className={styles["time-scroll"]}
-      style={{ maxHeight: 350, overflowY: "scroll" }}
-    >
-      <ListGroup>{times}</ListGroup>
-    </div>
-  );
-}
-
-function PickerHeader({
-  title,
-  onMonthChange,
-}: {
-  title: string;
-  onMonthChange: (d: -1 | 1) => unknown;
-}) {
-  return (
-    <div className="d-flex justify-content-between p-3">
-      <Button
-        color="white"
-        className="btn-link"
-        onClick={() => onMonthChange(-1)}
-      >
-        <ArrowRight size={30} />
-      </Button>
-      <h2 className="text-center">{title}</h2>
-      <Button
-        color="white"
-        className="btn-link"
-        onClick={() => onMonthChange(1)}
-      >
-        <ArrowLeft size={30} />
-      </Button>
-    </div>
-  );
-}
+import { useDatePicker } from "./useMentorDatePicker";
 
 export function MentorDateTimePicker({
   dates,
+  reservedDates,
   setDates,
 }: {
   dates: Moment[];
+  reservedDates: Moment[];
+
   setDates: (n: Moment[]) => void;
 }) {
   const ctrlPressed = useKeyPress("Control");
 
   const {
     changeMonth,
-    currentMonthTitle,
+    monthTitle,
     selectedDays,
     highlightedDays,
     startWeekday,
     daysInMonth,
     toggleDay,
     selectedTimes,
+    reservedTimes,
     toggleTime,
     disabledDays,
     outlinedDays,
   } = useDatePicker({
     dates,
+    reservedDates: reservedDates,
     setDates,
     ctrlPressed,
   });
 
   return (
     <>
-      <PickerHeader title={currentMonthTitle} onMonthChange={changeMonth} />
+      <PickerHeader title={monthTitle} onMonthChange={changeMonth} />
       <Row>
         <Col md={9}>
           <DatePickerUI
@@ -125,6 +55,7 @@ export function MentorDateTimePicker({
         <Col md={3}>
           <TimePicker
             selectedTimes={selectedTimes}
+            reservedTimes={reservedTimes}
             hidden={selectedDays.length < 1}
             onTimeClicked={toggleTime}
           />

@@ -25,3 +25,39 @@ export function compareDates(a: Date, b: Date) {
   if (a.getHours() !== b.getHours()) return false;
   return true;
 }
+
+function filterByMonth(dates: Moment[], month: Moment) {
+  return dates.filter(
+    (d) => d.jYear() === month.jYear() && d.jMonth() === month.jMonth(),
+  );
+}
+
+function filterByDay(dates: Moment[], day: number) {
+  return dates.filter(
+    (d) => d.jDate() === day,
+  );
+}
+
+function daysOf(dates: Moment[]) {
+  return dates.map((d) => d.jDate());
+}
+
+function hoursOf(dates: Moment[]) {
+  return dates.map((d) => d.hour());
+}
+
+export function scope(
+  dates: Moment[],
+  { month, day }: { month: Moment; day?: number },
+) {
+  const datesInMonth = filterByMonth(dates, month);
+  const datesInDay = filterByDay(datesInMonth, day ?? -1);
+
+  return {
+    all: dates,
+    datesInMonth,
+    datesInDay,
+    daysInMonth: daysOf(datesInMonth),
+    timesInDay: hoursOf(datesInDay),
+  };
+}

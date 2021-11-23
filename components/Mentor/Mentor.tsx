@@ -114,36 +114,32 @@ function Times({
   selectedTime: ITime | null;
   onSelect: OnSelect;
 }) {
-  console.log("selected", selectedTime);
-  let firstDay: number | undefined;
-  const list: React.ReactNode[] = [];
-
-  let i = 0;
-  for (const time of times) {
-    let selected = false;
-
-    if (selectedTime) {
-      selected = compareDates(new Date(time.date), new Date(selectedTime.date));
-    }
-
-    list.push(
-      <Time
-        key={i}
-        {...time}
-        selected={selected}
-        onClick={() => onSelect(time)}
-      />
-    );
-
-    i++;
-  }
-
   return (
     <div
       className={styles["time-scroll"]}
       style={{ overflowY: "scroll", maxHeight: "250px" }}
     >
-      <ListGroup>{list}</ListGroup>
+      <ListGroup>
+        {times.map((time, i) => {
+          let selected = false;
+
+          if (selectedTime) {
+            selected = compareDates(
+              new Date(time.date),
+              new Date(selectedTime.date)
+            );
+          }
+
+          return (
+            <Time
+              key={i}
+              {...time}
+              selected={selected}
+              onClick={() => onSelect(time)}
+            />
+          );
+        })}
+      </ListGroup>
     </div>
   );
 }

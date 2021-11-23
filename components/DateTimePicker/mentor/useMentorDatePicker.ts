@@ -1,36 +1,35 @@
 import moment, { Moment } from "jalali-moment";
 import { without } from "ramda";
 import { useState } from "react";
-import { compareMoment, getFirstDayOfMonth } from "../utils";
+import { compareMoment, getFirstDayOfMonth, scope } from "../utils";
 
 export function useDatePicker(
   {
-    dates,
+    dates: _dates,
+    reservedDates,
     setDates,
     ctrlPressed,
   }: {
     dates: Moment[];
+    reservedDates: Moment[];
     setDates: (n: Moment[]) => void;
     ctrlPressed: boolean;
   },
 ) {
-  const [currentMonth, setCurrentMonth] = useState(getFirstDayOfMonth());
+  const [month, setMonth] = useState(getFirstDayOfMonth());
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const selectedDay = selectedDays.length === 1 ? selectedDays[0] : undefined;
 
-  const datesInCurrentMonth = dates.filter(
-    (d) => d.jMonth() === currentMonth.jMonth(),
-  );
+  const now = moment();
 
-  const highlightedDays: number[] = datesInCurrentMonth.map((d) => d.jDate()); // TODO: use Set to be unique
+  const filter = {
+    month,
+    day: selectedDay,
+  };
 
-  let selectedTimes: number[] = [];
+  const dates = scope(_dates, filter);
 
-  if (selectedDays.length > 0) {
-    const sDay = selectedDays[0];
-    selectedTimes = datesInCurrentMonth
-      .filter((d) => d.jDate() === sDay)
-      .map((d) => d.hour());
-  }
+  const reserved = scope(reservedDates, filter);
 
   function toggleDay(day: number) {
     if (ctrlPressed) {
@@ -49,11 +48,11 @@ export function useDatePicker(
     const now = moment();
     if (selectedDays.length === 0) return;
 
-    let newDates = [...dates];
+    let newDates = [...dates.all];
     for (const selectedDay of selectedDays) {
-      const date = currentMonth.clone().jDate(selectedDay).hour(time);
+      const date = month.clone().jDate(selectedDay).hour(time);
 
-      if (!includes(dates, date)) {
+      if (!includes(dates.all, date)) {
         if (date.isBefore(now)) continue;
         newDates.push(date);
       } else {
@@ -65,33 +64,21 @@ export function useDatePicker(
 
   function changeMonth(d: -1 | 1) {
     setSelectedDays([]);
-    setCurrentMonth(currentMonth.clone().add(d, "months"));
-  }
-
-  const disabledDays: number[] = [];
-  let now = moment();
-  for (let i = 0; i < 31; i++) {
-    if (currentMonth.clone().add(i + 1, "days").isBefore(now)) {
-      disabledDays.push(i + 1);
-    }
-  }
-
-  const outlinedDays: number[] = [];
-  if (now.jMonth() === currentMonth.jMonth()) {
-    outlinedDays.push(now.jDate());
+    setMonth(month.clone().add(d, "months"));
   }
 
   return {
-    currentMonth,
-    currentMonthTitle: currentMonth.locale("fa").format("MMMM"),
-    highlightedDays,
+    month,
+    monthTitle: month.locale("fa").format("MMMM"),
+    highlightedDays: dates.daysInMonth,
     selectedDays,
-    selectedTimes,
-    startWeekday: currentMonth.jMonth(),
-    daysInMonth: currentMonth.jDaysInMonth(),
-    outlinedDays,
-    disabledDays,
-    setCurrentMonth,
+    selectedTimes: dates.timesInDay,
+    reservedTimes: reserved.timesInDay,
+    startWeekday: month.jDay(),
+    daysInMonth: month.jDaysInMonth(),
+    outlinedDays: now.jMonth() === month.jMonth() ? [now.jDate()] : [],
+    disabledDays: disabledDays(month),
+    setMonth,
     toggleDay,
     toggleTime,
     changeMonth,
@@ -113,4 +100,16 @@ function withoutDate(dates: Moment[], date: Moment): Moment[] {
   }
 
   return newDates;
+}
+
+function disabledDays(month: Moment) {
+  const days: number[] = [];
+  let now = moment();
+  for (let i = 0; i < 31; i++) {
+    if (month.clone().add(i + 1, "days").isBefore(now)) {
+      days.push(i + 1);
+    }
+  }
+
+  return days;
 }

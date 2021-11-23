@@ -34,8 +34,6 @@ function ProfileDropDown({ user }: { user: IUser }) {
   const [open, toggle] = useState(false);
   const router = useRouter();
 
-  console.log(user);
-
   const name = fa(user.name ?? user.phone?.replace("+98", "0") ?? "شما");
 
   return (

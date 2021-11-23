@@ -31,7 +31,13 @@ export default function ReserveMentor({
   const [selectedDate, setDate] = useState<ITime | null>(null);
   const { data, error } = useSWR<IMentor>(
     `/mentors/get_mentor?mentor_id=${mentorId}`,
-    fetcher
+    fetcher,
+    {
+      onSuccess(data) {
+        const dateInQuery = data.times.find((t) => t.date === time);
+        if (dateInQuery) setDate(dateInQuery);
+      },
+    }
   );
 
   async function reserve() {
@@ -41,13 +47,6 @@ export default function ReserveMentor({
       price_paid: data!.hourly_cost,
     });
   }
-
-  // useEffect(() => {
-  //   if (loading === true && data) {
-  //     setDate(data.times.find((time) => time.id === timeId) ?? selectedDate);
-  //     setLoading(false);
-  //   }
-  // });
 
   if (error) return <ErrorHandler error={error} />;
   if (!data) return <Loading />;
@@ -68,14 +67,12 @@ export default function ReserveMentor({
           <CardHeader>{timeTitle}</CardHeader>
           <CardBody>
             <UserDateTimePicker
-              availableDates={data.times
-                .filter((d) => !d.reserved)
-                .map((d) => d.date)}
+              availableDates={data.times.map((d) => d.date)}
               reservedDates={data.times
                 .filter((d) => d.reserved)
                 .map((d) => d.date)}
               selectedDate={selectedDate?.date ?? null}
-              onDate={(date) => {
+              onDateSelected={(date) => {
                 if (date === null) return setDate(null);
                 for (const source of data.times) {
                   const isSame = compareMoment(moment(source.date), date);

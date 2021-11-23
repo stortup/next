@@ -1,51 +1,31 @@
 import { Moment } from "jalali-moment";
 import { without } from "ramda";
-import { useState } from "react";
-import { getFirstDayOfMonth } from "../utils";
+import { useEffect, useState } from "react";
+import { getFirstDayOfMonth, scope } from "../utils";
 
 export function useDatePicker(
-  { availableDates, reservedDates, onDate }: {
+  { availableDates, reservedDates, selectedDate, onDateSelected }: {
     availableDates: Moment[];
     reservedDates: Moment[];
-    onDate: (date: Moment | null) => unknown;
+    selectedDate: Moment | null;
+    onDateSelected: (date: Moment | null) => unknown;
   },
 ) {
-  const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
-  const [currentMonth, setCurrentMonth] = useState(getFirstDayOfMonth());
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [month, setMonth] = useState(getFirstDayOfMonth());
+  const [selectedDay, setSelectedDay] = useState<number | undefined>(undefined);
 
-  const availableDatesInCurrentMonth = filterByMonth(
-    availableDates,
-    currentMonth.jMonth(),
-  );
+  useEffect(() => {
+    setSelectedDay(selectedDate?.jDate());
+  }, [selectedDate]);
 
-  const reservedDatesInCurrentMonth = filterByMonth(
-    reservedDates,
-    currentMonth.jMonth(),
-  );
+  const filter = {
+    month,
+    day: selectedDay,
+  };
 
-  const availableDatesInCurrentDay = filterByDay(
-    availableDatesInCurrentMonth,
-    selectedDay || -1,
-  );
-
-  const reservedDatesInCurrentDay = filterByDay(
-    reservedDatesInCurrentMonth,
-    selectedDay || -1,
-  );
-
-  const highlightedDays: number[] = availableDatesInCurrentMonth.map((v) =>
-    v.jDate()
-  );
-
-  const disabledDays: number[] = without(highlightedDays, allDaysInMonth());
-  const availableTimesInCurrentDay = availableDatesInCurrentDay.map((d) =>
-    d.hour()
-  );
-
-  const reservedTimesInCurrentDay = reservedDatesInCurrentDay.map((d) =>
-    d.hour()
-  );
+  const available = scope(availableDates, filter);
+  const reserved = scope(reservedDates, filter);
+  const selected = scope(selectedDate ? [selectedDate] : [], filter);
 
   function toggleDay(day: number) {
     setSelectedDay(day);
@@ -54,57 +34,34 @@ export function useDatePicker(
   function selectTime(time: number) {
     if (!selectedDay) return;
 
-    const date = currentMonth.clone().jDate(selectedDay).hour(time);
+    const date = month.clone().jDate(selectedDay).hour(time);
     if (selectedDate?.isSame(date)) {
-      setSelectedDate(null);
-      onDate(null);
+      onDateSelected(null);
       return;
     }
 
-    setSelectedDate(date);
-    onDate(date);
+    onDateSelected(date);
   }
 
   function changeMonth(d: -1 | 1) {
-    setSelectedDay(null);
-    setCurrentMonth(currentMonth.clone().add(d, "months"));
+    setSelectedDay(undefined);
+    setMonth(month.clone().add(d, "months"));
   }
 
   return {
-    currentMonth,
-    currentMonthTitle: currentMonth.locale("fa").format("MMMM"),
-    highlightedDays,
-    disabledDays,
-    startWeekday: currentMonth.jMonth(),
-    daysInMonth: currentMonth.jDaysInMonth(),
-    availableTimesInCurrentDay,
-    reservedTimesInCurrentDay,
+    month,
+    monthTitle: month.locale("fa").format("MMMM"),
+    highlightedDays: available.daysInMonth,
+    startWeekday: month.jDay(),
+    daysInMonth: month.jDaysInMonth(),
+    availableTimes: available.timesInDay,
+    reservedTimes: reserved.timesInDay,
+    selectedTimes: selected.timesInDay,
     selectedDay,
-    setCurrentMonth,
+    setMonth,
     toggleDay,
     selectTime,
     changeMonth,
     selectedDate,
   };
-}
-
-function filterByMonth(dates: Moment[], month: number) {
-  return dates.filter(
-    (d) => d.jMonth() === month,
-  );
-}
-
-function filterByDay(dates: Moment[], day: number) {
-  return dates.filter(
-    (d) => d.jDate() === day,
-  );
-}
-
-function allDaysInMonth() {
-  const days: number[] = [];
-  for (let d = 1; d <= 31; d++) {
-    days.push(d);
-  }
-
-  return days;
 }
