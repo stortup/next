@@ -13,17 +13,48 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import cardPicture from "public/a.png";
+import { useRouter } from "next/router";
+import { queryToString } from "utils/query";
+import useSWR from "swr";
+import { fetcher } from "client/client";
+import urlcat from "urlcat";
+import { Loading } from "components/Loading";
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  creator: {
+    name: string;
+    bio: string;
+  };
+}
 
 function CoursesPage() {
-  const a: number[] = new Array(10).fill(0);
+  const router = useRouter();
+  const search = queryToString(router.query.search);
+
+  const { data, error } = useSWR<Course[]>(
+    urlcat("/courses/get_all_courses", {
+      search,
+    }),
+    fetcher
+  );
+
+  if (!data) return <Loading />;
+  const hasResult = data.length > 0;
+
   return (
     <>
+      <SearchResult query={search} />
+
       <Row>
-        {a.map((item, index) => (
+        {data.map((item, index) => (
           <Col key={index} lg={4} md={6} sm={12} xs={12} className="g-3">
-            <Course id={index.toString()} />
+            <Course {...item} />
           </Col>
         ))}
+        {!hasResult && <NoResult />}
       </Row>
     </>
   );
@@ -31,11 +62,11 @@ function CoursesPage() {
 
 CoursesPage.title = "دوره ها";
 CoursesPage.dashboard = true;
+CoursesPage.searchBar = true;
 
 export default CoursesPage;
 
-function Course({ id }: { id: string }) {
-  console.log(id);
+function Course({ id, title, description, creator }: Course) {
   return (
     <Card
       style={{ backgroundColor: "#fefefe" }}
@@ -45,11 +76,8 @@ function Course({ id }: { id: string }) {
         <a className="color-none">
           <Image alt="title" src={cardPicture} className="card-img-top" />
           <CardBody>
-            <CardTitle tag="h5">جذب سرمایه هوشمند</CardTitle>
-            <CardText>
-              جذب سرمایه هوشمندشما در این آموزش با اصول پایه ای جذب سرمایه
-              ومذاکره با سرمایه گذار آشنا می‌شوید
-            </CardText>
+            <CardTitle tag="h5">{title}</CardTitle>
+            <CardText>{description}</CardText>
           </CardBody>
         </a>
       </Link>
@@ -60,9 +88,9 @@ function Course({ id }: { id: string }) {
 
           <div>
             <CardTitle tag="h6" className="mb-1">
-              صد استارتاپ
+              {creator.name}
             </CardTitle>
-            <CardSubtitle>سرمایه گذار خطر پذیر</CardSubtitle>
+            <CardSubtitle>{creator.bio}</CardSubtitle>
           </div>
         </div>
       </CardFooter>
@@ -80,5 +108,25 @@ function SampleLogo() {
         backgroundColor: "#ddbb11",
       }}
     ></div>
+  );
+}
+
+function SearchResult({ query }: { query?: string }) {
+  if (!query) return null;
+
+  const title = `نتایج جستجو برای "${query}"`;
+
+  return (
+    <div className="mt-1">
+      <h4>{title}</h4>
+    </div>
+  );
+}
+
+function NoResult() {
+  return (
+    <div className="w-100 text-center mt-4">
+      <h5 className="fw-light">نتیجه ای یافت نشد</h5>
+    </div>
   );
 }

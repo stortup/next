@@ -9,12 +9,7 @@ import { allCategories } from "categories";
 import { Loading } from "components/Loading";
 import { useRouter } from "next/router";
 import urlcat from "urlcat";
-
-function queryToString(q: string | undefined | string[]): string | undefined {
-  if (!q) return q;
-  if (Array.isArray(q)) return q[0];
-  return q;
-}
+import { queryToString } from "utils/query";
 
 export default function MentorsPage() {
   const router = useRouter();
