@@ -70,7 +70,7 @@ function Course({ id, title, description, creator }: Course) {
   return (
     <Card
       style={{ backgroundColor: "#fefefe" }}
-      className="card-shadow p-0 mb-5 border-0 rounded"
+      className="card-shadow p-0 mb-5 rounded"
     >
       <Link href={`/courses/${id}`} passHref>
         <a className="color-none">

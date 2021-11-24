@@ -24,7 +24,7 @@ export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
 
   return (
     <Col className="d-flex align-items-stretch">
-      <Card className="w-100">
+      <Card className="card-shadow w-100">
         <Row className="g-0 h-100">
           <Col sm={7}>
             <CardBody className="d-flex flex-column h-100">

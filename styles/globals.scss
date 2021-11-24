@@ -174,23 +174,40 @@ th {
   border-bottom: none !important;
 }
 
-.card {
+.card.card-shadow {
   border: none;
   // box-shadow: 0 10px 15px -3px rgb(0 0 0 / 5%), 0 4px 6px -2px rgb(0 0 0 / 1%);
-  box-shadow: 0 1px 1px 0 rgb(66 66 66 / 8%), 0 1px 3px 1px rgb(66 66 66 / 16%);
+  box-shadow: 0 7px 9px -3px rgb(0 0 0 / 7%), 0 4px 6px -2px rgb(0 0 0 / 5%);
 }
 
-.card:hover {
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 7%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+.card.card-shadow:hover {
+  box-shadow: 0 1px 1px 0 rgb(66 66 66 / 8%), 0 1px 3px 1px rgb(66 66 66 / 16%);
 }
 
 a.color-none {
   color: inherit;
 }
 
-.r1_iframe_embed {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: auto;
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-primary.active,
+.open > .dropdown-toggle.btn-outline-primary {
+  color: #0d6efd;
+  background-color: #e7f0ff;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active,
+.btn-outline-danger.active,
+.open > .dropdown-toggle.btn-outline-primary {
+  color: #dc3545;
+  background-color: #ffe7e9;
+}
+
+[class*="btn-outline-"]:active,
+[class*="btn-outline-"]:focus {
+  box-shadow: none !important;
+  outline: 0px !important;
 }

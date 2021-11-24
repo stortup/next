@@ -23,6 +23,7 @@
     "reactstrap": "^9.0.0",
     "sass": "^1.43.4",
     "swr": "^1.0.1",
+    "tus-js-client": "^2.3.0",
     "urlcat": "^2.0.4"
   },
   "devDependencies": {
