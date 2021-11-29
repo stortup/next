@@ -1,7 +1,7 @@
 import { fetcher } from "client/client";
 import { ErrorHandler } from "components/ErrorHandler";
 import { Loading } from "components/Loading";
-import { Player } from "components/Player";
+import { Player } from "components/courses/Player";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";

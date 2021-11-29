@@ -10,10 +10,8 @@
   },
   "dependencies": {
     "bootstrap": "^5.0.0-beta3",
-    "dayjs": "^1.10.7",
     "jalali-moment": "^3.3.10",
     "jalaliday": "^2.3.0",
-    "mdb-ui-kit": "^3.9.0",
     "next": "11.1.2",
     "ramda": "^0.27.1",
     "react": "17.0.2",

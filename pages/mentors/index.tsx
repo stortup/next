@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Mentor } from "components/Mentor/Mentor";
+import { Mentor } from "components/mentors/Mentor";
 import { fetcher } from "client/client";
 import useSWR from "swr";
 import { Row, Badge } from "reactstrap";

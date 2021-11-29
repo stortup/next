@@ -1,11 +1,10 @@
-// import "bootstrap/dist/css/bootstrap.rtl.css";
-// import "mdb-ui-kit/css/mdb.rtl.min.css";
-import "../styles/globals.scss";
-import type { AppProps } from "next/app";
+import "bootstrap/dist/css/bootstrap.rtl.css";
 import { NextPage } from "next";
+import type { AppProps } from "next/app";
 import Head from "next/head";
-import React, { ReactElement, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Dashboard } from "../layouts/dashboard";
+import "../styles/globals.css";
 
 type NextPageWithLayout = NextPage & {
   dashboard?: boolean;

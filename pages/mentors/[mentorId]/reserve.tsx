@@ -1,7 +1,7 @@
 import { fetcher } from "client/client";
 import { Avatar } from "components/Avatar";
-import { UserDateTimePicker } from "components/DateTimePicker/user/UserDateTimePicker";
-import { compareMoment } from "components/DateTimePicker/utils";
+import { UserDateTimePicker } from "components/mentors/DateTimePicker/user/UserDateTimePicker";
+import { compareMoment } from "components/mentors/DateTimePicker/utils";
 import { ErrorHandler } from "components/ErrorHandler";
 import { Loading } from "components/Loading";
 import moment from "jalali-moment";

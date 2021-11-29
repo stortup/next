@@ -2,7 +2,7 @@ import { fetcher, upload } from "client/client";
 import { Alert, Button, Row, Col, Input } from "reactstrap";
 import { IMentorFull, IUserFull } from "types";
 import { Editable } from "components/Editable";
-import { UploadFile } from "components/Upload";
+import { UploadFile } from "components/mentors/Upload";
 import { CategoryPicker } from "components/CategoryPicker/CategoryPicker";
 import { fa } from "utils/persian";
 import { useRef, useState } from "react";

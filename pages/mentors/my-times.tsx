@@ -1,5 +1,5 @@
 import { fetcher } from "client/client";
-import { MentorDateTimePicker } from "components/DateTimePicker/mentor/MentorDateTimePicker";
+import { MentorDateTimePicker } from "components/mentors/DateTimePicker/mentor/MentorDateTimePicker";
 import { ErrorHandler } from "components/ErrorHandler";
 import moment, { Moment } from "jalali-moment";
 import { useState } from "react";

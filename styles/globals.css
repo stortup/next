@@ -1,6 +1,5 @@
 @import url("https://v1.fontapi.ir/css/Vazir");
-// @import "‍‍‍~mdb-ui-kit/css/mdb.rtl.min.css";
-@import "~bootstrap/dist/css/bootstrap.rtl.css";
+
 * {
   direction: rtl;
   font-family: "Vazir", sans-serif;
@@ -28,19 +27,6 @@ a {
 }
 
 /* Custom */
-/* .btn,
-.form-control {
-  border-radius: 0.1rem !important;
-}
-
-.btn:focus,
-.btn:active {
-  border-color: rgba(82, 168, 236, 0.4);
-
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 4px rgba(82, 168, 236, 0.4) !important;
-  outline: 0px !important;
-} */
 
 .btn-link {
   text-decoration: none !important;
@@ -51,11 +37,6 @@ a {
   margin: 0.3rem 0.5rem !important;
   font-size: 0.9rem !important;
   background: none;
-}
-
-[class*="btn-outline-"] {
-  font-size: 0.9rem;
-  padding: 0.375rem 1.375rem 0.375rem;
 }
 
 .sidebar {
@@ -176,7 +157,7 @@ th {
 
 .card.card-shadow {
   border: none;
-  // box-shadow: 0 10px 15px -3px rgb(0 0 0 / 5%), 0 4px 6px -2px rgb(0 0 0 / 1%);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 5%), 0 4px 6px -2px rgb(0 0 0 / 1%);
   box-shadow: 0 7px 9px -3px rgb(0 0 0 / 7%), 0 4px 6px -2px rgb(0 0 0 / 5%);
 }
 
@@ -201,9 +182,18 @@ a.color-none {
 .btn-outline-danger:focus,
 .btn-outline-danger:active,
 .btn-outline-danger.active,
-.open > .dropdown-toggle.btn-outline-primary {
+.open > .dropdown-toggle.btn-outline-danger {
   color: #dc3545;
   background-color: #ffe7e9;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active,
+.btn-outline-secondary.active,
+.open > .dropdown-toggle.btn-outline-secondary {
+  color: #6c757d;
+  background-color: #dbdbdb;
 }
 
 [class*="btn-outline-"]:active,

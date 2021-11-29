@@ -16,7 +16,7 @@ import moment, { Moment } from "jalali-moment";
 import { fa } from "utils/persian";
 import styles from "../../styles/Mentors.module.css";
 import { IMentor, ITime } from "types";
-import { compareDates } from "components/DateTimePicker/utils";
+import { compareDates } from "components/mentors/DateTimePicker/utils";
 import { Avatar } from "components/Avatar";
 
 export function Mentor({ id, name, bio, resume, times, avatar_url }: IMentor) {
