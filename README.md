@@ -14,6 +14,3 @@ BASE_URL - Base URL for the API
 
 ## Directory Structure
 Follows Next.js standard directory structure.
-
-## Authors
-- Erfan Safari - erfanshield@outlook.com
